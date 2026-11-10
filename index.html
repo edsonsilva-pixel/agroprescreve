@@ -2,8 +2,18 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dashboard Agronômico - Versão V43 Diretrizes Compactas & Nomes Completos</title>
+  
+  <!-- Configurações PWA / Aplicativo de Celular -->
+  <meta name="theme-color" content="#065f46">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AgroPrescreve">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- PDF.js para leitura direta de bulas e receituários PDF no navegador -->
@@ -11,7 +21,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
+    body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     .badge-btn.active-badge {
       box-shadow: 0 0 0 2px #059669;
       font-weight: 700;
@@ -22,6 +32,63 @@
     }
     .photo-card-img:hover {
       transform: scale(1.05);
+    }
+
+    /* =========================================================================
+       MODO RESPONSIVO INTELIGENTE: TABELA LARGA NO PC & CARTÕES NO CELULAR
+       ========================================================================= */
+    @media (max-width: 768px) {
+      table colgroup {
+        display: none !important;
+      }
+      table thead {
+        display: none !important;
+      }
+      table, table tbody {
+        display: block !important;
+        width: 100% !important;
+      }
+
+      table tr {
+        display: block !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 1rem !important;
+        padding: 1rem !important;
+        margin-bottom: 0.9rem !important;
+        box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.06) !important;
+      }
+
+      table td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        padding: 0.45rem 0 !important;
+        border-bottom: 1px dashed #f1f5f9 !important;
+        font-size: 0.85rem !important;
+        text-align: right !important;
+        width: 100% !important;
+        overflow: visible !important;
+        word-break: break-word !important;
+      }
+
+      table td:last-child {
+        border-bottom: none !important;
+        padding-top: 0.6rem !important;
+        justify-content: flex-end !important;
+      }
+
+      table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #475569;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        text-align: left;
+        margin-right: 0.85rem;
+        flex-shrink: 0;
+      }
     }
   </style>
 </head>
@@ -40,6 +107,9 @@
         </div>
       </div>
       <div class="flex items-center gap-2 flex-wrap justify-end">
+        <button id="btnInstalarAppHeader" onclick="dispararInstalacaoApp()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-extrabold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-300 shadow-sm cursor-pointer animate-pulse" title="Instalar aplicativo no celular ou computador">
+          <i class="fa-solid fa-mobile-screen-button"></i> Instalar App
+        </button>
         <button onclick="abrirRepositorioBulas()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-emerald-400 shadow-sm cursor-pointer" title="Abrir pasta digital com todas as bulas">
           <i class="fa-solid fa-folder-open text-amber-300"></i> Repositório
         </button>
@@ -102,10 +172,9 @@
       </div>
     </div>
 
-        <!-- Search & Filter Controls -->
+    <!-- Search & Filter Controls -->
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-        <!-- 1. Campo de Pesquisa Geral por Texto -->
         <div class="md:col-span-4 relative">
           <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -122,7 +191,6 @@
           </button>
         </div>
 
-        <!-- 2. Cortina / Dropdown de Cultura -->
         <div class="md:col-span-3">
           <select id="filtroCultura" onchange="aoMudarCulturaSelect(this.value)" class="w-full py-3 px-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-medium text-slate-700">
             <option value="">🌿 Todas as Culturas</option>
@@ -164,15 +232,12 @@
           </select>
         </div>
 
-        <!-- 3. NOVA CORTINA / DROPDOWN DE DOENÇAS & PRAGAS (EXATAMENTE COMO TODAS AS CLASSES!) -->
         <div class="md:col-span-3">
           <select id="filtroPragaDropdown" onchange="aoSelecionarPragaDropdown(this.value)" class="w-full py-3 px-3.5 bg-slate-50 border border-slate-300 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
             <option value="">🐛 Todas as Doenças & Pragas</option>
-            <!-- Preenchido dinamicamente com todas as pragas da cultura -->
           </select>
         </div>
 
-        <!-- 4. Cortina / Dropdown de Classe Química (IRAC, FRAC, HRAC) -->
         <div class="md:col-span-2">
           <select id="filtroClasse" onchange="filtrarDados()" class="w-full py-3 px-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-medium text-slate-700">
             <option value="">Todas as Classes</option>
@@ -183,7 +248,6 @@
         </div>
       </div>
 
-      <!-- Barra sutil e limpa de Atalhos de Cultura (sem poluição de 200+ botões de pragas) -->
       <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar flex-1">
           <span class="text-slate-400 font-medium whitespace-nowrap mr-1">Atalho Cultura:</span>
@@ -227,14 +291,9 @@
       </div>
     </div>
 
-
     <!-- Main Grid: Table & Visual Analysis -->
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
-
-      <!-- Left Column: Table Section & Visual Symptoms Gallery Below -->
       <div class="xl:col-span-9 lg:col-span-8 space-y-5">
-
-        <!-- Table Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
           <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
             <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -243,7 +302,7 @@
             <span id="badgeContagem" class="text-xs bg-slate-200 px-2.5 py-1 rounded-full font-semibold text-slate-700">0 itens</span>
           </div>
 
-          <div class="w-full flex-1 overflow-x-hidden">
+          <div class="w-full flex-1 overflow-x-hidden p-2 sm:p-0">
             <table class="w-full text-left text-xs table-fixed border-collapse">
               <colgroup>
                 <col style="width: 14%;">
@@ -268,7 +327,6 @@
                 </tr>
               </thead>
               <tbody id="tabelaCorpo" class="divide-y divide-slate-100 text-slate-700">
-                <!-- Populated by JavaScript -->
               </tbody>
             </table>
             <div id="semResultados" class="hidden py-12 text-center text-slate-400">
@@ -279,9 +337,7 @@
           </div>
         </div>
 
-        <!-- ================================================================= -->
-        <!-- SEÇÃO VISUAL: BUSCADOR DE FOTOS REAIS DA INTERNET & DIAGNÓSTICO -->
-        <!-- ================================================================= -->
+        <!-- Seção Visual -->
         <div id="secaoGaleriaVisual" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-200">
           <div class="p-4 border-b border-slate-100 bg-slate-50/70 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
@@ -302,17 +358,14 @@
             </div>
           </div>
 
-          <!-- Cards das 3 Imagens Reais -->
           <div class="p-5">
             <div id="statusCarregamentoFotos" class="hidden mb-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center gap-2">
               <i class="fa-solid fa-spinner fa-spin text-emerald-600"></i> Buscando fotografias reais de alta resolução na web para o alvo...
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="cardsImagensSintomas">
-              <!-- Preenchido dinamicamente com fotos reais -->
             </div>
 
-            <!-- Dica agronômica / Guia de identificação de campo -->
             <div id="guiaIdentificacao" class="mt-4 p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-xl flex items-start gap-3">
               <div class="text-emerald-700 text-lg mt-0.5"><i class="fa-solid fa-lightbulb"></i></div>
               <div class="text-xs text-emerald-950">
@@ -327,10 +380,8 @@
 
       </div>
 
-      <!-- Right Panel: Resistance Management & Chart -->
+      <!-- Right Panel -->
       <div class="xl:col-span-3 lg:col-span-4 space-y-5">
-        
-        <!-- Resistance Strategy Box -->
         <div class="bg-gradient-to-br from-emerald-900 to-teal-800 text-white p-4 rounded-2xl shadow-sm">
           <div class="flex items-center gap-1.5 text-amber-300 text-[10.5px] font-bold uppercase tracking-wider">
             <i class="fa-solid fa-shield-halved"></i> Diretriz Antirresistência
@@ -340,11 +391,9 @@
             Alterne os mecanismos de ação químico/biológico entre ciclos de pulverização para evitar pressão de seleção e resistência de pragas.
           </p>
           <div id="gruposDisponiveisTags" class="mt-2.5 space-y-1.5 max-h-80 overflow-y-auto pr-1">
-            <!-- Group badges populated by JS -->
           </div>
         </div>
 
-        <!-- Chart Box -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
           <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between">
             <span>Distribuição por Classe Química</span>
@@ -355,7 +404,6 @@
           </div>
         </div>
 
-        <!-- Card de Piretroides (IRAC Grupo 3A) -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
           <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
             <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -371,12 +419,9 @@
             Inseticidas <b>IRAC Grupo 3A</b> (moduladores de canais de sódio). Ação rápida de choque (<i>knockdown</i>) e repelência por contato e ingestão.
           </p>
 
-          <!-- Lista Dinâmica de Piretroides da Base -->
           <div id="listaPiretroidesContainer" class="space-y-2 max-h-64 overflow-y-auto pr-1">
-            <!-- Preenchido dinamicamente pelo JavaScript com os produtos que são piretroides -->
           </div>
 
-          <!-- Rodapé técnico do card -->
           <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
             <button onclick="filtrarApenasPiretroides()" class="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 transition">
               <i class="fa-solid fa-filter"></i> Filtrar só piretroides na tabela
@@ -385,11 +430,8 @@
           </div>
         </div>
 
-
       </div>
-
     </div>
-
   </main>
 
   <!-- Details / Bula Modal -->
@@ -402,7 +444,6 @@
         </button>
       </div>
       <div class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1 overscroll-contain" id="modalConteudo">
-        <!-- Detalhes preenchidos dinamicamente -->
       </div>
       <div class="p-4 bg-slate-100 border-t border-slate-200 flex justify-between items-center sticky bottom-0 z-20 flex-shrink-0">
         <button id="btnExcluirModal" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded-xl transition text-xs flex items-center gap-1.5 border border-rose-300 shadow-sm cursor-pointer">
@@ -427,8 +468,6 @@
       </div>
 
       <div class="p-6 space-y-4 text-xs">
-        
-        <!-- Drag & Drop PDF Area -->
         <div class="border-2 border-dashed border-emerald-400 bg-emerald-50/70 hover:bg-emerald-50 rounded-2xl p-6 text-center transition cursor-pointer relative" id="dropArea">
           <input type="file" id="pdfFileInput" accept="application/pdf" multiple class="absolute inset-0 opacity-0 cursor-pointer" onchange="processarMultiplosPDFs(this.files)">
           <div class="space-y-2 pointer-events-none">
@@ -505,16 +544,13 @@
             </button>
           </div>
         </form>
-
       </div>
     </div>
   </div>
 
-    <!-- Repositório de Bulas / Biblioteca Digital Modal -->
+  <!-- Repositório de Bulas / Biblioteca Digital Modal -->
   <div id="modalRepositorio" onclick="if(event.target === this) fecharRepositorioBulas()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-150 my-auto border border-slate-200">
-      
-      <!-- Topo Modal -->
       <div class="p-4 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-emerald-900 text-white sticky top-0 z-20 flex-shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-emerald-700/80 flex items-center justify-center text-amber-300 text-lg shadow-inner">
@@ -532,7 +568,6 @@
         </button>
       </div>
 
-      <!-- Barra de Pesquisa e Filtros da Biblioteca -->
       <div class="p-4 bg-slate-50 border-b border-slate-200 space-y-3 flex-shrink-0">
         <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
           <div class="relative w-full sm:w-80">
@@ -567,10 +602,8 @@
         </div>
       </div>
 
-      <!-- Lista / Grid de Bulas -->
       <div class="p-4 sm:p-5 overflow-y-auto flex-1 overscroll-contain bg-slate-100/50">
         <div id="gridRepositorioBulas" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <!-- Preenchido dinamicamente pelo JavaScript -->
         </div>
         <div id="repositorioVazio" class="hidden text-center py-12 text-slate-400">
           <i class="fa-regular fa-folder-open text-4xl mb-2 text-slate-300"></i>
@@ -578,7 +611,6 @@
         </div>
       </div>
 
-      <!-- Rodapé Modal -->
       <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center sticky bottom-0 z-20 flex-shrink-0">
         <div class="text-[11px] text-slate-500 flex items-center gap-2">
           <i class="fa-solid fa-database text-emerald-600"></i>
@@ -588,20 +620,15 @@
           <i class="fa-solid fa-xmark"></i> Fechar
         </button>
       </div>
-
     </div>
   </div>
-
 
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // Catálogo Mestre Completo Agrofit / MAPA (>110 culturas)
     const CATALOGO_AGROFIT_COMPLETO = [{"nome": "Soja", "termos": ["soja"]}, {"nome": "Milho", "termos": ["milho"]}, {"nome": "Algodão", "termos": ["algodao", "algodoeiro"]}, {"nome": "Feijão", "termos": ["feijao", "feijoeiro"]}, {"nome": "Feijão-caupi", "termos": ["feijao caupi", "feijao-caupi", "caupi", "feijao de corda", "feijao-fradinho"]}, {"nome": "Feijão-vagem", "termos": ["feijao vagem", "feijao-vagem"]}, {"nome": "Arroz", "termos": ["arroz", "arroz irrigado", "arroz de sequeiro"]}, {"nome": "Trigo", "termos": ["trigo"]}, {"nome": "Café", "termos": ["cafe", "cafeeiro"]}, {"nome": "Cana-de-açúcar", "termos": ["cana", "cana de acucar", "cana-de-acucar"]}, {"nome": "Sorgo", "termos": ["sorgo"]}, {"nome": "Aveia", "termos": ["aveia"]}, {"nome": "Cevada", "termos": ["cevada"]}, {"nome": "Centeio", "termos": ["centeio"]}, {"nome": "Triticale", "termos": ["triticale"]}, {"nome": "Girassol", "termos": ["girassol"]}, {"nome": "Amendoim", "termos": ["amendoim"]}, {"nome": "Gergelim", "termos": ["gergelim"]}, {"nome": "Mandioca", "termos": ["mandioca", "aipim", "macaxeira"]}, {"nome": "Fumo", "termos": ["fumo", "tabaco"]}, {"nome": "Canola", "termos": ["canola"]}, {"nome": "Mamona", "termos": ["mamona", "mamoneira"]}, {"nome": "Linhaça", "termos": ["linhaca"]}, {"nome": "Milheto", "termos": ["milheto"]}, {"nome": "Citros", "termos": ["citros", "citrus", "laranja", "laranjeira", "limao", "limoeiro", "tangerina", "tangerineira", "mexerica", "bergamota", "pomelo", "lima acida"]}, {"nome": "Uva", "termos": ["uva", "videira", "parreira"]}, {"nome": "Maçã", "termos": ["maca", "macieira"]}, {"nome": "Banana", "termos": ["banana", "bananeira"]}, {"nome": "Manga", "termos": ["manga", "mangueira"]}, {"nome": "Mamão", "termos": ["mamao", "mamoeiro", "papaya"]}, {"nome": "Abacaxi", "termos": ["abacaxi", "ananas", "abacaxizeiro"]}, {"nome": "Melão", "termos": ["melao", "meloeiro"]}, {"nome": "Melancia", "termos": ["melancia", "melancieira"]}, {"nome": "Morango", "termos": ["morango", "morangueiro"]}, {"nome": "Maracujá", "termos": ["maracuja", "maracujazeiro", "passiflora"]}, {"nome": "Pêssego", "termos": ["pessego", "pessegueiro"]}, {"nome": "Nectarina", "termos": ["nectarina", "nectarineira"]}, {"nome": "Ameixa", "termos": ["ameixa", "ameixeira"]}, {"nome": "Pera", "termos": ["pera", "pereira"]}, {"nome": "Goiaba", "termos": ["goiaba", "goiabeira"]}, {"nome": "Abacate", "termos": ["abacate", "abacateiro"]}, {"nome": "Caju", "termos": ["caju", "cajueiro"]}, {"nome": "Figo", "termos": ["figo", "figueira"]}, {"nome": "Caqui", "termos": ["caqui", "caquizeiro"]}, {"nome": "Coco", "termos": ["coco", "coqueiro"]}, {"nome": "Dendê", "termos": ["dende", "dendezeiro", "palma de oleo"]}, {"nome": "Açaí", "termos": ["acai", "acaizeiro"]}, {"nome": "Acerola", "termos": ["acerola", "aceroleira"]}, {"nome": "Graviola", "termos": ["graviola", "gravioleira"]}, {"nome": "Atemoia", "termos": ["atemoia", "pinha", "fruta do conde"]}, {"nome": "Noz-pecã", "termos": ["noz", "noz peca", "noz-peca", "nogueira"]}, {"nome": "Pitaia", "termos": ["pitaia", "pitaya"]}, {"nome": "Romã", "termos": ["roma", "romanzeira"]}, {"nome": "Carambola", "termos": ["carambola", "caramboleira"]}, {"nome": "Jabuticaba", "termos": ["jabuticaba", "jabuticabeira"]}, {"nome": "Cupuaçu", "termos": ["cupuacu", "cupuacueiro"]}, {"nome": "Guaraná", "termos": ["guarana", "guaranazeiro"]}, {"nome": "Cacau", "termos": ["cacau", "cacaueiro"]}, {"nome": "Nêspera", "termos": ["nespera", "nespereira"]}, {"nome": "Mirtilo", "termos": ["mirtilo", "blueberry"]}, {"nome": "Amora", "termos": ["amora", "amoreira"]}, {"nome": "Framboesa", "termos": ["framboesa"]}, {"nome": "Batata", "termos": ["batata", "batata inglesa", "batateira"]}, {"nome": "Batata-doce", "termos": ["batata doce", "batata-doce"]}, {"nome": "Tomate", "termos": ["tomate", "tomateiro", "tomate industrial", "tomate de mesa"]}, {"nome": "Cebola", "termos": ["cebola"]}, {"nome": "Alho", "termos": ["alho"]}, {"nome": "Pimentão", "termos": ["pimentao", "pimentoeiro"]}, {"nome": "Pimenta", "termos": ["pimenta", "pimenteira"]}, {"nome": "Cenoura", "termos": ["cenoura"]}, {"nome": "Beterraba", "termos": ["beterraba"]}, {"nome": "Alface", "termos": ["alface"]}, {"nome": "Repolho", "termos": ["repolho"]}, {"nome": "Couve", "termos": ["couve", "couve manteiga", "couve de folhas"]}, {"nome": "Couve-flor", "termos": ["couve flor", "couve-flor"]}, {"nome": "Brócolis", "termos": ["brocolis", "brocolos"]}, {"nome": "Pepino", "termos": ["pepino", "pepineiro"]}, {"nome": "Abobrinha", "termos": ["abobrinha", "abobrinha italiana"]}, {"nome": "Abóbora", "termos": ["abobora", "jerimum", "moringue"]}, {"nome": "Chuchu", "termos": ["chuchu", "chuchuzeiro"]}, {"nome": "Berinjela", "termos": ["berinjela", "beringela"]}, {"nome": "Quiabo", "termos": ["quiabo", "quiabeiro"]}, {"nome": "Ervilha", "termos": ["ervilha"]}, {"nome": "Grão-de-bico", "termos": ["grao de bico", "grao-de-bico"]}, {"nome": "Lentilha", "termos": ["lentilha"]}, {"nome": "Espinafre", "termos": ["espinafre"]}, {"nome": "Rúcula", "termos": ["rucula"]}, {"nome": "Agrião", "termos": ["agriao"]}, {"nome": "Salsa", "termos": ["salsa", "salsinha"]}, {"nome": "Cebolinha", "termos": ["cebolinha"]}, {"nome": "Coentro", "termos": ["coentro"]}, {"nome": "Manjericão", "termos": ["manjericao"]}, {"nome": "Gengibre", "termos": ["gengibre"]}, {"nome": "Inhame", "termos": ["inhame"]}, {"nome": "Cará", "termos": ["cara"]}, {"nome": "Mandioca-de-mesa", "termos": ["mandioca de mesa"]}, {"nome": "Aspargo", "termos": ["aspargo", "espargo"]}, {"nome": "Alcachofra", "termos": ["alcachofra"]}, {"nome": "Palmito", "termos": ["palmito", "pupunha", "palmeira real"]}, {"nome": "Rabanete", "termos": ["rabanete"]}, {"nome": "Nabo", "termos": ["nabo"]}, {"nome": "Acelga", "termos": ["acelga"]}, {"nome": "Chicória", "termos": ["chicoria", "escarola"]}, {"nome": "Alho-poró", "termos": ["alho poro", "alho-poro"]}, {"nome": "Mostarda", "termos": ["mostarda"]}, {"nome": "Pastagens", "termos": ["pastagem", "pastagens", "brachiaria", "braquiaria", "panicum", "mombaca", "tanzania", "marandu", "capim", "forrageira", "forrageiras", "gramado", "gramados"]}, {"nome": "Eucalipto", "termos": ["eucalipto", "eucalyptus"]}, {"nome": "Pinus", "termos": ["pinus", "pinheiro"]}, {"nome": "Seringueira", "termos": ["seringueira", "hevea"]}, {"nome": "Acácia", "termos": ["acacia"]}, {"nome": "Teca", "termos": ["teca"]}, {"nome": "Flores e Ornamentais", "termos": ["flores", "plantas ornamentais", "ornamentais", "floricultura", "crisantemo", "rosa", "rosas", "orquidea", "orquideas", "anturio", "gérbera", "gerbera", "cravo", "cravos", "begonia", "lirio", "calanchoe", "violeta", "hibisco"]}];
 
-                        // Recuperação inteligente e desduplicação de todos os produtos do usuário
     const STORAGE_KEY = 'agro_defensivos_data_v43';
-    const PRODUTOS_INICIAIS = [];
     let produtos = [];
     try {
       const salvo = localStorage.getItem(STORAGE_KEY) || 
@@ -639,12 +666,10 @@
       produtos = [];
     }
 
-    // Mecanismo auxiliar de comparação estrita de nomes (ignora pontuações, espaços extras e símbolos ® +)
     function normalizarNomeComparacao(nome) {
       return normalizar(nome || '').replace(/[^a-z0-9]/g, '').trim();
     }
 
-    // Limpa automaticamente duplicatas pré-existentes na base mantendo a lista 100% íntegra
     function deduplicarListaProdutos(lista) {
       const vistos = new Set();
       const resultado = [];
@@ -662,11 +687,6 @@
       return resultado;
     }
 
-        
-    // Catálogo Mestre Completo Agrofit / MAPA (>110 culturas)
-    
-
-    // Motor Universal de Reconhecimento de Culturas em Bulas
     function extrairTodasAsCulturas(texto) {
       if (!texto) return "Culturas registradas em bula";
       const textoNorm = normalizar(texto).replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ');
@@ -688,7 +708,6 @@
         : "Culturas registradas em bula";
     }
 
-    // Validador Global de Cultura: verifica se o termo corresponde a uma cultura agrícola
     function ehNomeDeCultura(termo) {
       if (!termo) return false;
       const tNorm = normalizar(String(termo)).trim();
@@ -703,7 +722,6 @@
       });
     }
 
-    // Higieniza produtos já salvos, separando culturas que caíram indevidamente em alvos
     function higienizarPragasECulturas(lista) {
       return lista.map(p => {
         if (!p.alvo) return p;
@@ -736,19 +754,16 @@
       });
     }
 
-        produtos = higienizarPragasECulturas(deduplicarListaProdutos(produtos));
+    produtos = higienizarPragasECulturas(deduplicarListaProdutos(produtos));
 
-    // Correção inteligente para defensivos com alvos, culturas ou doses com ruído de versões antigas
     produtos = produtos.map(p => {
       const nomeNorm = normalizarNomeComparacao(p.nome);
       const iaNorm = normalizar(p.ia || '');
       
-      // Caso do SANMITE EW / Piridabem: restaura os ácaros oficiais de bula
       if (nomeNorm.includes('sanmite') || iaNorm.includes('piridabem')) {
         p.alvo = 'Ácaro-rajado, Ácaro-vermelho, Ácaro-da-mancha-anular, Ácaro-da-leprose, Mosca-branca, Psilídeo';
       }
 
-      // Caso do DICARZOL / Cloridrato de Formetanato: atualiza todas as culturas (incluindo Maracujá e Abacaxi) e remove a falsa "Ferrugem"
       if (nomeNorm.includes('dicarzol') || iaNorm.includes('formetanato')) {
         p.nome = 'DICARZOL 500 SP';
         p.ia = 'Cloridrato de Formetanato';
@@ -758,17 +773,14 @@
         p.cultura = 'Algodão, Alho, Ameixa, Abacaxi, Batata, Cebola, Citros, Feijão, Maçã, Mamão, Manga, Maracujá, Melancia, Melão, Morango, Nectarina, Pepino, Pêssego, Pimentão, Tomate, Uva, Flores e Ornamentais';
       }
 
-      // Caso do BESTPHOS / Cipermetrina: corrige a dose capturada erroneamente como volume de calda (200 L/ha -> 100 a 150 mL/ha)
       if (nomeNorm.includes('bestphos') || (iaNorm.includes('cipermetrina') && (/200\s*l/i.test(p.dose || '') || /\d{3,}\s*l/i.test(p.dose || '')))) {
         p.dose = '100 a 150 mL/ha';
       }
 
-      // Limpeza geral de doses que tenham capturado volume de calda de água (>15 L/ha)
       if (p.dose && /([2-9]\d{1,3}|\d{3,})\s*(?:l|litros)\s*(?:\/|por)\s*ha/i.test(p.dose)) {
         p.dose = 'Conforme bula';
       }
 
-      // Limpeza geral de falsos positivos: se tiver 'falsa-ferrugem' e não for fungicida, remove 'Ferrugem'
       if (p.alvo && /falsa[-\s]ferrugem/i.test(p.alvo) && !/fungicida|FRAC/i.test(p.grupo || '')) {
         const alvosLista = p.alvo.split(/[,;/]\s*/).filter(a => normalizar(a).trim() !== 'ferrugem');
         p.alvo = alvosLista.join(', ');
@@ -786,9 +798,6 @@
       }
     }
 
-    // =========================================================================
-    // MAPEAMENTO BOTÂNICO & BUSCA DE FOTOS REAIS NA WEB VIA WIKIMEDIA API (CORS FREE)
-    // =========================================================================
     const MAPEAMENTO_CIENTIFICO = {
       "mildio": {
         termoBusca: "Plasmopara viticola",
@@ -837,7 +846,7 @@
     let chartInstance = null;
 
     function normalizar(texto) {
-      return (texto || '').normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+      return (texto || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     }
 
     function setQuery(termo) {
@@ -855,9 +864,6 @@
       filtrarDados();
     }
 
-    // =========================================================================
-    // BUSCADOR EM TEMPO REAL NA API PÚBLICA DA WIKIMEDIA (FOTOS REAIS DA WEB)
-    // =========================================================================
     async function buscarFotosInternet(termo) {
       const q = normalizar(termo);
       const cardsContainer = document.getElementById('cardsImagensSintomas');
@@ -867,7 +873,6 @@
       const tituloDica = document.getElementById('tituloDicaCampo');
       const btnGoogle = document.getElementById('btnGoogleImagens');
 
-      // Atualiza link de busca rápida no Google Imagens
       const termoLimpo = termo.trim() || 'mildio lavoura';
       btnGoogle.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent('sintomas ' + termoLimpo + ' folhas lavoura dano')}`;
 
@@ -887,7 +892,6 @@
       status.classList.remove('hidden');
 
       try {
-        // Consulta na API pública da Wikimedia Commons com origin=* (permitido de qualquer navegador/arquivo local!)
         const endpoint = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(termoBuscaAPI + ' plant disease leaf symptom')}&gsrlimit=12&prop=imageinfo&iiprop=url|mime|extmetadata&iiurlwidth=600&format=json&origin=*`;
         
         const res = await fetch(endpoint);
@@ -900,7 +904,6 @@
             if (page.imageinfo && page.imageinfo[0]) {
               const info = page.imageinfo[0];
               const mime = info.mime || '';
-              // Filtra fotos reais (JPEG, PNG) e descarta ícones SVG
               if (mime.includes('image/jpeg') || mime.includes('image/png') || mime.includes('image/jpg')) {
                 const thumbUrl = info.thumburl || info.url;
                 if (thumbUrl && !thumbUrl.includes('.svg')) {
@@ -915,7 +918,6 @@
           }
         }
 
-        // Se encontrou fotos reais na web, renderiza as 3 melhores
         if (fotosReais.length >= 2) {
           renderizarCardsFotosReais(fotosReais.slice(0, 3), config, termo);
           status.classList.add('hidden');
@@ -925,7 +927,6 @@
         console.warn("Não foi possível consultar a API ao vivo, carregando fotos curadas...", err);
       }
 
-      // Fallback: se estiver offline ou a API não retornar imagens suficientes, carrega fotos agronômicas reais de alta fidelidade
       status.classList.add('hidden');
       renderizarFotosCuradas(config, termo);
     }
@@ -978,7 +979,6 @@
       const cardsContainer = document.getElementById('cardsImagensSintomas');
       const termo = normalizar(termoOriginal);
 
-      // URLs de fotografias reais de alta resolução com CDN público de confiança
       const FOTOS_REAIS_CURADAS = {
         "mildio": [
           {
@@ -1042,9 +1042,6 @@
       reader.readAsDataURL(file);
     }
 
-    // =========================================================================
-    // EXCLUSÃO DE PRODUTO / BULA
-    // =========================================================================
     function excluirProduto(idOuNome) {
       const prod = produtos.find(p => (p.id && p.id === idOuNome) || p.nome === idOuNome);
       const nomeExibicao = prod ? prod.nome : idOuNome;
@@ -1067,20 +1064,13 @@
       filtrarDados();
     }
 
-    
-    
-            // =========================================================================
-    // CORTINA / DROPDOWN DE DOENÇAS & PRAGAS (CORREÇÃO DE TEXTO INVISÍVEL V16)
-    // =========================================================================
     let pragaSelecionadaDropdown = '';
 
     function limparNomeAlvo(item) {
       if (!item) return '';
       let limpo = String(item).trim();
-      // Remove parênteses com nomes científicos se existirem
       limpo = limpo.replace(/\s*\(.*?\)/g, '').trim();
       
-      // Normaliza grafias comuns de pragas
       if (/tripes|tripés/i.test(limpo)) limpo = 'Tripes';
       if (/curuquere|curuquerê/i.test(limpo)) limpo = 'Curuquerê';
       if (/pulgao|pulgão/i.test(limpo)) limpo = 'Pulgão';
@@ -1088,7 +1078,6 @@
       if (/mildio|míldio/i.test(limpo)) limpo = 'Míldio';
       if (/oidio|oídio/i.test(limpo)) limpo = 'Oídio';
 
-      // Descarta ruídos óbvios de texto e cabeçalhos de bula
       if (limpo.length < 3 || limpo.length > 35) return '';
       const norm = normalizar(limpo);
       const stopWords = [
@@ -1102,8 +1091,6 @@
       return limpo.charAt(0).toUpperCase() + limpo.slice(1);
     }
 
-    
-    // Dicionário de ícones para culturas
     const ICONES_CULTURAS = {
       "Soja": "🌱", "Milho": "🌽", "Algodão": "🌾", "Feijão": "🫘", "Feijão-caupi": "🫘",
       "Arroz": "🌾", "Trigo": "🌾", "Café": "☕", "Cana-de-açúcar": "🎋", "Sorgo": "🌾",
@@ -1121,7 +1108,6 @@
       "Pastagens": "🌱", "Eucalipto": "🌲", "Pinus": "🌲", "Seringueira": "🌳", "Flores e Ornamentais": "💐"
     };
 
-    // Popula dinamicamente a cortina de culturas a partir de todos os produtos cadastrados
     function popularDropdownCulturas() {
       const select = document.getElementById('filtroCultura');
       if (!select) return;
@@ -1129,7 +1115,6 @@
       const valorAtual = select.value;
       const mapaCulturas = new Map();
 
-      // Varre todas as culturas registradas nos produtos
       produtos.forEach(p => {
         if (!p.cultura) return;
         const partes = String(p.cultura).split(/[,;/]\s*/);
@@ -1138,7 +1123,6 @@
           if (limpo && limpo.length > 2 && !/registradas/i.test(limpo)) {
             const chave = normalizar(limpo);
             if (!mapaCulturas.has(chave)) {
-              // Formata nome com inicial maiúscula
               const nomeFormatado = limpo.charAt(0).toUpperCase() + limpo.slice(1);
               mapaCulturas.set(chave, nomeFormatado);
             }
@@ -1146,9 +1130,7 @@
         });
       });
 
-      // Ordena alfabeticamente
       const listaCulturas = Array.from(mapaCulturas.values()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-
       select.innerHTML = '<option value="">🌿 Todas as Culturas</option>';
 
       listaCulturas.forEach(cultura => {
@@ -1159,12 +1141,10 @@
         select.appendChild(opt);
       });
 
-      // Restaura seleção anterior se existir
       if (valorAtual) {
         select.value = valorAtual;
       }
     }
-
 
     function popularDropdownPragas() {
       try {
@@ -1174,7 +1154,6 @@
         const selectCultura = document.getElementById('filtroCultura');
         const culturaFiltro = selectCultura ? selectCultura.value : '';
 
-        // Filtra produtos conforme a cultura selecionada
         const produtosParaAlvos = produtos.filter(p => {
           if (!culturaFiltro) return true;
           return normalizar(p.cultura || '').includes(normalizar(culturaFiltro));
@@ -1199,27 +1178,21 @@
         let listaAlvos = Array.from(setAlvos.values());
         listaAlvos.sort((a, b) => a.localeCompare(b));
 
-        // Atualiza KPI no cabeçalho
         const kpiAlvos = document.getElementById('kpi-alvos');
         if (kpiAlvos) {
           kpiAlvos.textContent = listaAlvos.length;
         }
 
-        // Valor procurado atualmente
         const searchInput = document.getElementById('searchInput');
         const valorProcurado = (searchInput ? searchInput.value.trim() : '') || pragaSelecionadaDropdown;
 
-        // Limpa e recria as opções
         selectPraga.innerHTML = '';
 
-        // 1. Opção Padrão (SEMPRE COM TEXTO VISÍVEL!)
         const optPadrao = document.createElement('option');
         optPadrao.value = '';
-        const textoCultura = culturaFiltro ? `em ${culturaFiltro}` : 'Cadastradas';
         optPadrao.textContent = "🐛 Todas as Doenças & Pragas";
         selectPraga.appendChild(optPadrao);
 
-        // 2. Opções de cada praga
         listaAlvos.forEach(alvo => {
           const opt = document.createElement('option');
           opt.value = alvo;
@@ -1227,7 +1200,6 @@
           selectPraga.appendChild(opt);
         });
 
-        // 3. Seleção inteligente que NUNCA deixa a caixa em branco
         let indexParaSelecionar = 0;
         if (valorProcurado) {
           const vNorm = normalizar(valorProcurado);
@@ -1340,14 +1312,10 @@
       }
     }
     
-    // =========================================================================
-    // LISTA DINÂMICA DE PIRETROIDES (IRAC GRUPO 3A)
-    // =========================================================================
     function ehPiretroide(p) {
       if (!p) return false;
       const grupo = normalizar(p.grupo || '');
       const ia = normalizar(p.ia || '');
-      const nome = normalizar(p.nome || '');
 
       const matchGrupo = /3\s*a|piretr/i.test(grupo);
       const matchIA = /lambda-cialotrina|cialotrina|cipermetrina|bifentrina|deltametrina|ciflutrina|permetrina|fenpropatrina|esfenvalerato|etofenproxi|alfa-cipermetrina|beta-ciflutrina|beta-cipermetrina/i.test(ia);
@@ -1447,7 +1415,6 @@
       atualizarGrafico(filtrados);
       atualizarTagsGrupos(filtrados);
       
-      // Busca fotos reais da internet para a praga filtrada
       buscarFotosInternet(qInput || "mildio");
     }
 
@@ -1481,49 +1448,49 @@
         const idProd = p.id || p.nome;
 
         tr.innerHTML = `
-          <td class="py-2.5 px-3 align-top overflow-hidden">
+          <td data-label="Produto" class="py-2.5 px-3 align-top overflow-hidden">
             <button onclick="event.stopPropagation(); abrirBulaEmNovaAba('${idProd}')" class="flex items-start gap-1.5 text-left hover:text-emerald-700 transition cursor-pointer group/btn" title="Clique para abrir a Bula em PDF">
               <span class="w-2 h-2 rounded-full ${p.carencia <= 7 ? 'bg-emerald-500' : 'bg-amber-500'} flex-shrink-0 mt-1"></span>
               <span class="hover:underline underline-offset-2 text-xs font-bold text-slate-900 break-words leading-tight">${p.nome}</span>
               <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400 group-hover/btn:text-emerald-600 transition ml-0.5 mt-1 flex-shrink-0"></i>
             </button>
           </td>
-          <td class="py-2.5 px-2 align-top text-slate-700 text-xs font-medium break-words leading-tight overflow-hidden">${p.ia}</td>
-          <td class="py-2.5 px-2 align-top overflow-hidden">
-            <div class="flex flex-col gap-1 items-start">
+          <td data-label="Ingrediente Ativo" class="py-2.5 px-2 align-top text-slate-700 text-xs font-medium break-words leading-tight overflow-hidden">${p.ia}</td>
+          <td data-label="Modo de Ação" class="py-2.5 px-2 align-top overflow-hidden">
+            <div class="flex flex-col gap-1 items-start sm:items-start items-end">
               <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border ${grupoCor} leading-tight break-words">${p.grupo}</span>
               <span class="inline-flex items-center gap-1 text-[9px] font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 leading-tight">
                 <i class="fa-solid fa-atom text-emerald-600 text-[8px]"></i> ${p.tipoAcao || 'Ação Fisiológica'}
               </span>
             </div>
           </td>
-          <td class="py-2.5 px-3 align-top font-semibold text-emerald-800 text-xs leading-relaxed overflow-hidden">
-            <div class="line-clamp-3 leading-relaxed break-words" title="${p.alvo}">${p.alvo}</div>
+          <td data-label="Pragas / Alvos" class="py-2.5 px-3 align-top font-semibold text-emerald-800 text-xs leading-relaxed overflow-hidden">
+            <div class="sm:line-clamp-3 leading-relaxed break-words" title="${p.alvo}">${p.alvo}</div>
           </td>
-          <td class="py-2.5 px-3 align-top text-slate-600 text-xs leading-relaxed overflow-hidden">
-            <div class="line-clamp-3 leading-relaxed break-words" title="${p.cultura}">
+          <td data-label="Cultura" class="py-2.5 px-3 align-top text-slate-600 text-xs leading-relaxed overflow-hidden">
+            <div class="sm:line-clamp-3 leading-relaxed break-words" title="${p.cultura}">
               ${p.cultura}
             </div>
           </td>
-          <td class="py-2.5 px-2 align-top text-center overflow-hidden">
+          <td data-label="Dose (20L)" class="py-2.5 px-2 align-top sm:text-center text-right overflow-hidden">
             <div class="font-bold text-slate-800 text-xs break-words">${p.dose}</div>
             <div class="inline-flex items-center justify-center gap-1 text-[10px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 px-1.5 py-0.5 rounded mt-1 shadow-xs whitespace-nowrap" title="Dose para bomba costal de 20 litros">
               <i class="fa-solid fa-spray-can text-emerald-600 text-[9px]"></i> <span>${calcularDoseBomba20L(p.dose)} / 20L</span>
             </div>
           </td>
-          <td class="py-2.5 px-1.5 align-top text-center whitespace-nowrap">
+          <td data-label="Carência" class="py-2.5 px-1.5 align-top text-center whitespace-nowrap">
             <span class="font-bold text-slate-800 text-xs px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">${p.carencia}d</span>
           </td>
-          <td class="py-2.5 px-1.5 align-top text-center whitespace-nowrap">
-            <div class="flex items-center justify-center gap-1">
-              <button onclick="event.stopPropagation(); abrirBulaEmNovaAba('${idProd}')" class="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer" title="Abrir Bula em PDF">
-                <i class="fa-solid fa-file-pdf text-xs"></i>
+          <td data-label="Ações" class="py-2.5 px-1.5 align-top text-center whitespace-nowrap">
+            <div class="flex items-center justify-end sm:justify-center gap-1">
+              <button onclick="event.stopPropagation(); abrirBulaEmNovaAba('${idProd}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer" title="Abrir Bula em PDF">
+                <i class="fa-solid fa-file-pdf text-sm"></i>
               </button>
-              <button onclick='abrirDetalhes(${JSON.stringify(p)})' class="p-1 text-slate-400 hover:text-emerald-700 hover:bg-slate-100 rounded transition cursor-pointer" title="Ver Ficha Técnica">
-                <i class="fa-solid fa-circle-info text-xs"></i>
+              <button onclick='abrirDetalhes(${JSON.stringify(p)})' class="p-1.5 text-slate-400 hover:text-emerald-700 hover:bg-slate-100 rounded transition cursor-pointer" title="Ver Ficha Técnica">
+                <i class="fa-solid fa-circle-info text-sm"></i>
               </button>
-              <button onclick='event.stopPropagation(); excluirProduto("${idProd}")' class="p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded transition cursor-pointer" title="Excluir este produto">
-                <i class="fa-solid fa-trash-can text-xs"></i>
+              <button onclick='event.stopPropagation(); excluirProduto("${idProd}")' class="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded transition cursor-pointer" title="Excluir este produto">
+                <i class="fa-solid fa-trash-can text-sm"></i>
               </button>
             </div>
           </td>
@@ -1544,7 +1511,7 @@
       }
     }
 
-        function formatarClasseAmigavel(grupoOriginal) {
+    function formatarClasseAmigavel(grupoOriginal) {
       if (!grupoOriginal) return "Outros defensivos";
       const g = String(grupoOriginal);
       
@@ -1578,7 +1545,7 @@
       return classeNome;
     }
 
-        function formatarGrupoCurto(gOriginal) {
+    function formatarGrupoCurto(gOriginal) {
       if (!gOriginal) return "Outros";
       const g = String(gOriginal).trim();
       
@@ -1697,20 +1664,14 @@
       });
     }
 
-    
-        // Cálculo Automático de Dose para Pulverizador Costal / Bomba de 20 Litros
-    // REGRA DE OURO: Adota sempre a MENOR dosagem da bula como referência segura
     function calcularDoseBomba20L(doseStr) {
       if (!doseStr) return "Conforme bula";
       const doseClean = String(doseStr).trim().toLowerCase();
 
-      // Descarte de falso positivo: se for volume de calda d'água (ex: 150 a 200 L/ha)
       if (/([2-9]\d{1,3}|\d{3,})\s*(?:l|litros)\s*(?:\/|por)\s*ha/i.test(doseClean)) {
         return "Conforme bula";
       }
 
-      // 1. Caso Base 100 Litros de água (ex: 100 g/100 L, 75 a 100 mL/100 L, 25 a 40 mL / 100L)
-      // Proporção direta: 20L é 20% (1/5) da calda de 100L
       const match100L = doseClean.match(/([\d.,]+(?:\s*(?:a|até|-)\s*[\d.,]+)?)\s*(g|kg|ml|l)\s*(?:\/|por|\/100|\s*em\s*100)?\s*100\s*l/i);
       if (match100L) {
         const valStr = match100L[1];
@@ -1724,22 +1685,21 @@
         });
 
         if (nums.length > 0) {
-          // Pega sempre a MENOR dose recomendada em bula
           const menorDose = Math.min(...nums);
           let val20L = 0;
           let unitRes = "mL";
 
           if (unidade === 'kg') {
-            val20L = menorDose * 200; // kg -> g por 20L
+            val20L = menorDose * 200;
             unitRes = "g";
           } else if (unidade === 'l') {
-            val20L = menorDose * 200; // L -> mL por 20L
+            val20L = menorDose * 200;
             unitRes = "mL";
           } else if (unidade === 'g') {
-            val20L = menorDose * 0.2; // 100g / 100L -> 20g / 20L
+            val20L = menorDose * 0.2;
             unitRes = "g";
           } else {
-            val20L = menorDose * 0.2; // 75mL / 100L -> 15mL / 20L
+            val20L = menorDose * 0.2;
             unitRes = "mL";
           }
 
@@ -1748,8 +1708,6 @@
         }
       }
 
-      // 2. Caso Base Hectare (ex: 100 a 150 mL/ha, 1000 a 1250 mL/ha, 1,0 a 1,5 L/ha, 200 g/ha)
-      // Calda de referência técnica para aplicação costal: 200 L/ha (10 bombas de 20L por hectare)
       const matchHa = doseClean.match(/([\d.,]+(?:\s*(?:a|até|-)\s*[\d.,]+)?)\s*(g|kg|ml|l)\s*(?:\/|por)\s*ha/i);
       if (matchHa) {
         const valStr = matchHa[1];
@@ -1763,10 +1721,8 @@
         });
 
         if (nums.length > 0) {
-          // Pega sempre a MENOR dose recomendada em bula
           const menorDose = Math.min(...nums);
 
-          // Se for L/ha mas o número for >= 15 (ex: 200 L/ha), trata-se de volume de calda d'água!
           if (unidade === 'l' && menorDose >= 15) {
             return "Conforme bula";
           }
@@ -1775,16 +1731,16 @@
           let unitRes = "mL";
 
           if (unidade === 'l') {
-            val20L = menorDose * 100; // ex: 1,0 L/ha / 10 bombas = 100 mL/bomba
+            val20L = menorDose * 100;
             unitRes = "mL";
           } else if (unidade === 'kg') {
-            val20L = menorDose * 100; // ex: 1 kg/ha / 10 bombas = 100 g/bomba
+            val20L = menorDose * 100;
             unitRes = "g";
           } else if (unidade === 'ml') {
-            val20L = menorDose / 10;  // ex: 100 mL/ha / 10 bombas = 10 mL/bomba
+            val20L = menorDose / 10;
             unitRes = "mL";
           } else {
-            val20L = menorDose / 10;  // g
+            val20L = menorDose / 10;
             unitRes = "g";
           }
 
@@ -1849,17 +1805,6 @@
       document.getElementById('modalNovo').classList.add('hidden');
     }
 
-    // =========================================================================
-    // MOTOR DE EXTRAÇÃO DE BULAS E RECEITUÁRIOS PDF
-    // =========================================================================
-        
-    // =========================================================================
-    // MOTOR DE PROCESSAMENTO EM LOTE (MÚLTIPLOS PDFs SIMULTÂNEOS)
-    // =========================================================================
-    
-    // =========================================================================
-    // ARMAZENAMENTO E ABERTURA DE BULA EM PDF EM NOVA ABA (target="_blank")
-    // =========================================================================
     const DB_NAME = 'AgroPrescreve_PDF_DB';
     const DB_VERSION = 1;
     const STORE_NAME = 'bulas_pdf';
@@ -1925,13 +1870,12 @@
 
     window.pdfSessionCache = window.pdfSessionCache || new Map();
 
-            async function abrirBulaEmNovaAba(produtoIdOuNome) {
+    async function abrirBulaEmNovaAba(produtoIdOuNome) {
       const prod = produtos.find(p => (p.id && p.id === produtoIdOuNome) || p.nome === produtoIdOuNome);
       if (!prod) return;
 
       const pId = prod.id || prod.nome;
       
-      // 1. Tenta obter o PDF original na memória ou no banco IndexedDB
       let blobPDF = window.pdfSessionCache ? (window.pdfSessionCache.get(pId) || window.pdfSessionCache.get(prod.nome)) : null;
       if (!blobPDF && typeof obterPDFDoBanco === 'function') {
         blobPDF = await obterPDFDoBanco(pId);
@@ -1943,13 +1887,10 @@
       const queryAgrofit = encodeURIComponent('bula ' + prod.nome + ' pdf agrofit mapa');
       const linkMAPA = 'https://www.google.com/search?q=' + queryAgrofit;
 
-      // 2. Se o arquivo PDF original existir (Blob):
       if (blobPDF) {
         const fileURL = URL.createObjectURL(blobPDF);
         const nomeArquivoDownload = 'Bula_' + prod.nome.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf';
         
-        // Abre nova aba segura com leitor embutido + barra de download e impressão direta
-        // Isso impede que a extensão do Adobe Acrobat intercepte e trave a aba com blob:null!
         const novaAba = window.open('', '_blank');
         if (novaAba) {
           novaAba.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Bula Oficial - ' + prod.nome + '</title>' +
@@ -1970,7 +1911,6 @@
             '.btn-close:hover{background:#475569}' +
             '.viewer-wrap{flex:1;width:100%;height:100%;position:relative;background:#1e293b}' +
             'iframe{width:100%;height:100%;border:none;background:#fff}' +
-            '.tip-acrobat{font-size:11px;color:#fbbf24;background:#78350f/40;padding:4px 10px;border-radius:6px;border:1px solid #b45309}' +
             '</style></head><body>' +
             '<div class="topbar">' +
             '<div class="prod-info">' +
@@ -1990,7 +1930,6 @@
           novaAba.document.close();
           return;
         } else {
-          // Se bloqueador de popup estiver ativo, faz download direto
           const a = document.createElement('a');
           a.href = fileURL;
           a.download = nomeArquivoDownload;
@@ -2001,7 +1940,6 @@
         }
       }
 
-      // 3. Se for produto sem o arquivo PDF salvo (apenas ficha cadastrada):
       const novaAba = window.open('', '_blank');
       if (novaAba) {
         novaAba.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ficha Técnica & Bula - ' + prod.nome + '</title>' +
@@ -2068,13 +2006,11 @@
       const status = document.getElementById('statusExtracao');
       status.classList.remove('hidden');
 
-      // Se for apenas 1 arquivo, processa normalmente e preenche o formulário para conferência
       if (total === 1) {
         await processarPDF(arquivos[0]);
         return;
       }
 
-      // Se forem múltiplos arquivos (em lote)
       let cadastrados = 0;
       let duplicadosIgnorados = [];
 
@@ -2098,14 +2034,12 @@
           const dadosExtraidos = extrairObjetoAgronomico(textoCompleto, file.name);
           const chaveNome = normalizarNomeComparacao(dadosExtraidos.nome);
 
-          // MECANISMO ANTIDUPLICATA: Bloqueia se já existir produto com o mesmo nome
           const jaExiste = produtos.some(p => normalizarNomeComparacao(p.nome) === chaveNome);
           if (jaExiste) {
             duplicadosIgnorados.push(dadosExtraidos.nome);
-            continue; // Pula este arquivo, impedindo duplicata!
+            continue;
           }
 
-          // Salva a bula em PDF original para abertura direta em nova aba
           if (window.pdfSessionCache) {
             window.pdfSessionCache.set(dadosExtraidos.id, file);
             window.pdfSessionCache.set(dadosExtraidos.nome, file);
@@ -2140,37 +2074,29 @@
       }, 1500);
     }
 
-    // Função que extrai os dados e retorna o objeto diretamente (para o modo em lote)
-    
-    // Extrator Inteligente de Doses de Bula (Ignora volumes de calda d'água >20 L/ha)
     function extrairDoseInteligenteBula(texto) {
       if (!texto) return "Conforme bula";
 
-      // 1. Prioridade Máxima: doses por 100 Litros de água (muito comum em hortifrúti/costal)
       const match100L = texto.match(/(?:dose(?:s)?(?:\s*\(p\.c\.\))?[:\s]*|concentra[çc][aã]o[:\s]*)?([\d.,]+(?:\s*(?:a|até|-)\s*[\d.,]+)?\s*(?:mL|ml|g|kg|L|l)\s*(?:\/|por|\/100|\s*em\s*100)\s*L)/i);
       if (match100L) {
         return match100L[1].replace(/\s+/g, ' ');
       }
 
-      // 2. Doses de defensivo por hectare em mL ou g (nunca se confundem com água)
       const matchHaMl = texto.match(/([\d.,]+(?:\s*(?:a|até|-)\s*[\d.,]+)?\s*(?:mL|ml|g)\s*(?:\/|por)\s*ha)/i);
       if (matchHaMl) {
         return matchHaMl[1].replace(/\s+/g, ' ');
       }
 
-      // 3. Doses em L/ha ou kg/ha (apenas valores plausíveis de defensivo, até 12 L/ha ou 12 kg/ha)
       const matchesLha = texto.matchAll(/([\d.,]+(?:\s*(?:a|até|-)\s*[\d.,]+)?)\s*(?:L|l|kg|Kg)\s*(?:\/|por)\s*ha/gi);
       for (const m of matchesLha) {
         const valStr = m[1];
         const partes = valStr.split(/\s*(?:a|até|-)\s*/);
         const primeiroNum = parseFloat(partes[0].replace(',', '.'));
-        // Se o número for menor que 15, é dose de defensivo! Se for >= 15 (ex: 100, 150, 200), é calda de água!
         if (!isNaN(primeiroNum) && primeiroNum > 0 && primeiroNum <= 15) {
           return m[0].replace(/\s+/g, ' ');
         }
       }
 
-      // 4. Qualquer outra menção explícita de dose
       const matchQualquer = texto.match(/dose(?:s)?[:\s]+([\d.,]+(?:\s*(?:a|até|-)\s*[\d.,]+)?\s*(?:mL|g|kg|L)\s*(?:\/|por)\s*(?:ha|100\s*L))/i);
       if (matchQualquer) {
         return matchQualquer[1].replace(/\s+/g, ' ');
@@ -2178,7 +2104,6 @@
 
       return "Conforme bula";
     }
-
 
     function extrairObjetoAgronomico(texto, nomeArquivo) {
       let nome = "";
@@ -2248,7 +2173,6 @@
       else if (grupo.includes("FRAC") || /fungicida/i.test(grupo) || /fungicida/i.test(texto)) classe = "FRAC";
       else if (grupo.includes("HRAC") || /herbicida/i.test(grupo) || /herbicida/i.test(texto)) classe = "HRAC";
 
-      // Tipo de Ação
       let tipoAcaoDetectado = "Contato e Ingestão";
       if (/sist[eê]mico/i.test(texto) && /contato/i.test(texto)) {
         tipoAcaoDetectado = "Sistêmico e Contato";
@@ -2266,7 +2190,6 @@
         tipoAcaoDetectado = "Contato";
       }
 
-      // Alvos Biológicos
       let alvosEncontrados = [];
       const regexBulaCientifica = /([A-ZÁÉÍÓÚÀÂÊÔÃÕÇ][a-záéíóúàâêôãõç\-]+(?:\s+[a-záéíóúàâêôãõç\-]+){0,3})\s*\(([A-Z][a-z]+\s+[a-z]+(?:\s+subsp\.\s+[a-z]+)?)\)/g;
       let matchAlvo;
@@ -2274,7 +2197,6 @@
         const nomeComum = matchAlvo[1].trim();
         if (nomeComum.length > 3 && !/Ministério|Agricultura|Registro|Titular|Fabricante|Formulador|Importador|Avenida|Bairro|Distrito|Brasil/i.test(nomeComum)) {
           if (typeof ehNomeDeCultura === 'function' && ehNomeDeCultura(nomeComum)) {
-            // Cultura com nome botânico (ex: Citros, Tomate, Melancia), NÃO entra em pragas!
           } else {
             alvosEncontrados.push(nomeComum);
           }
@@ -2325,15 +2247,21 @@
       });
 
       let listaFinalAlvos = Array.from(mapaNormalizado.values());
-      let alvoFinal = listaFinalAlvos.length > 0 ? listaFinalAlvos.join(", ") : "Pragas e Doenças registradas em bula";
+      let alvoFinal = "";
 
-            // 5. CULTURAS (Motor Universal Agrofit >110 Culturas)
+      if (listaFinalAlvos.length > 0) {
+        alvoFinal = listaFinalAlvos.join(", ");
+      } else {
+        if (/mildio|míldio/i.test(texto)) alvoFinal = "Míldio, Requeima";
+        else if (/fungicida/i.test(texto)) alvoFinal = "Mofo-branco, Antracnose, Manchas foliares";
+        else if (/acaricida/i.test(texto)) alvoFinal = "Ácaro-rajado, Ácaro-branco";
+        else if (/inseticida/i.test(texto)) alvoFinal = "Pulgão, Lagartas, Sugadores";
+        else alvoFinal = "Pragas e Doenças da cultura";
+      }
+
       let culturaFinal = extrairTodasAsCulturas(texto);
-
-// Dose (Extração inteligente da menor dose comercial sem confundir calda de água)
       let dose = extrairDoseInteligenteBula(texto);
 
-      // Carência
       let carencia = 14;
       const matchCarencia = texto.match(/(?:intervalo de segurança|carência|carencia)[^\d]*?(\d+)\s*dias/i);
       if (matchCarencia) {
@@ -2368,8 +2296,8 @@
         let textoCompleto = "";
 
         const paginasParaLer = Math.min(pdf.numPages, 25);
-        for (let i = 1; i <= paginasParaLer; i++) {
-          const page = await pdf.getPage(i);
+        for (let p = 1; p <= paginasParaLer; p++) {
+          const page = await pdf.getPage(p);
           const textContent = await page.getTextContent();
           textoCompleto += " " + textContent.items.map(item => item.str).join(" ");
         }
@@ -2403,7 +2331,6 @@
     }
 
     function extrairMetadadosAgronomicos(texto, nomeArquivo) {
-      // 1. NOME COMERCIAL (Limpo de ruídos de classe)
       let nome = "";
       const matchMarca = texto.match(/BULA\s+([A-Z0-9\s\-®]+?)(?:Registrado|COMPOSIÇÃO|Classe|MAPA)/i);
       if (matchMarca && matchMarca[1].trim().length < 50) {
@@ -2416,7 +2343,6 @@
         nome = nomeArquivo.replace(/\.pdf$/i, '').split(/[-_ ]/)[0].toUpperCase();
       }
 
-      // 2. INGREDIENTE ATIVO
       let ia = "";
       const matchMAPA = texto.match(/(?:COMPOSIÇÃO:\s*|Ingrediente Ativo:\s*)([A-ZÇÃÕa-z\s\-,]+?)\s*\.{3,}/i);
       if (matchMAPA && matchMAPA[1].length < 80) {
@@ -2446,7 +2372,6 @@
         ia = matchPar ? matchPar[1].trim() : "Ingrediente ativo especificado em bula";
       }
 
-      // 3. GRUPO QUÍMICO / MODO DE AÇÃO
       let grupo = "";
       const matchGrupo = texto.match(/GRUPO\s+([A-Z0-9\s+]+)\s+(INSETICIDA|FUNGICIDA|HERBICIDA|ACARICIDA)/i);
       const matchGrupoQuimico = texto.match(/GRUPO QUÍMICO:\s*([^\n.;]+)/i);
@@ -2467,33 +2392,26 @@
         else grupo = "Defensivo Químico Registrado";
       }
 
-      // 4. EXTRAÇÃO TOTAL E ROBUSTA DE TODAS AS PRAGAS E DOENÇAS (SEM CORTES!)
       let alvosEncontrados = [];
-
-      // A) Extração Direta pelo padrão científico de bula MAPA: "Nome comum (Nome científico)"
       const regexBulaCientifica = /([A-ZÁÉÍÓÚÀÂÊÔÃÕÇ][a-záéíóúàâêôãõç\-]+(?:\s+[a-záéíóúàâêôãõç\-]+){0,3})\s*\(([A-Z][a-z]+\s+[a-z]+(?:\s+subsp\.\s+[a-z]+)?)\)/g;
       let matchAlvo;
       while ((matchAlvo = regexBulaCientifica.exec(texto)) !== null) {
         const nomeComum = matchAlvo[1].trim();
         if (nomeComum.length > 3 && !/Ministério|Agricultura|Registro|Titular|Fabricante|Formulador|Importador|Avenida|Bairro|Distrito|Brasil/i.test(nomeComum)) {
           if (typeof ehNomeDeCultura === 'function' && ehNomeDeCultura(nomeComum)) {
-            // Cultura com nome botânico (ex: Citros, Tomate, Melancia), NÃO entra em pragas!
           } else {
             alvosEncontrados.push(nomeComum);
           }
         }
       }
 
-      // B) Catálogo agronômico amplo de pragas e doenças no Brasil
       const catalogoAlvos = [
-        // Lagartas e Mastigadores
         "Lagarta-falsa-medideira", "Lagarta-das-maçãs", "Lagarta-do-cartucho", "Lagarta-militar",
         "Lagarta-da-soja", "Lagarta-helicoverpa", "Helicoverpa", "Spodoptera", "Curuquerê", "Curuquerê-dos-capinzais",
         "Broca-do-fruto", "Broca-do-café", "Broca-da-cana", "Broca-das-axilas", "Broca-pequena-do-tomateiro", "Broca",
         "Traça-das-crucíferas", "Traça-do-tomateiro", "Traça-da-batata", "Traça",
         "Bicudo", "Bicudo-do-algodoeiro", "Vaquinha", "Vaquinha-verde-amarela",
         "Lagarta-elasmo", "Lagarta-rosca", "Coró",
-        // Sugadores
         "Pulgão-do-algodoeiro", "Pulgão-verde", "Pulgão-da-couve", "Pulgão-do-milho", "Pulgão-preto", "Pulgão",
         "Percevejo-marrom", "Percevejo-verde-pequeno", "Percevejo-verde", "Percevejo-barriga-verde", "Percevejo-castanho", "Percevejo",
         "Mosca-branca", "Mosca-minadora", "Mosca-das-frutas", "Mosca-do-broto", "Mosca",
@@ -2501,19 +2419,15 @@
         "Cigarrinha-do-milho", "Cigarrinha-das-pastagens", "Cigarrinha",
         "Cochonilha-branca", "Cochonilha-orthezia", "Cochonilha-parda", "Cochonilha",
         "Psilídeo", "Psilídeo-dos-citros",
-        // Ácaros
         "Ácaro-rajado", "Ácaro-vermelho", "Ácaro-da-mancha-anular", "Ácaro-da-leprose", "Ácaro-branco", "Ácaro-da-falsa-ferrugem", "Ácaro-do-bronzeamento", "Ácaro-das-gemas", "Ácaro-da-necrose", "Ácaros", "Ácaro",
-        // Doenças Fúngicas e Bacterianas
         "Míldio", "Requeima", "Mofo-branco", "Antracnose", "Mancha-alvo", "Ferrugem-asiática", "Ferrugem-da-folha",
         "Ferrugem-polissora", "Ferrugem", "Oídio", "Cercosporiose", "Mancha-parda", "Mancha-angular",
         "Podridão-radicular", "Septoriose", "Helmintosporiose", "Fusariose", "Mancha-de-estenfilio",
         "Mancha-de-ramulária", "Ramulária", "Mancha-púrpura", "Podridão-branca", "Podridão-cinzenta", "Podridão-de-esclerotinia",
         "Podridão-floral", "Sarna", "Gomose", "Verrugose", "Melanose", "Cancro-cítrico", "Mancha-bacteriana",
         "Tombamento", "Rizoctoniose", "Pinta-preta", "Manchas foliares", "Manchas Foliares",
-        // Nematoides
         "Nematoide-das-galhas", "Nematoide-das-lesões", "Nematoide-de-cisto", "Nematoide-reniforme",
         "Pratylenchus", "Meloidogyne", "Heterodera", "Nematoides", "Nematoide",
-        // Plantas Daninhas
         "Capim-amargoso", "Capim-pé-de-galinha", "Capim-colchão", "Capim-marmelada", "Capim-carrapicho", "Capim-braquiária",
         "Buva", "Caruru", "Corda-de-viola", "Picão-preto", "Trapoeraba", "Guanxuma"
       ];
@@ -2525,7 +2439,6 @@
         }
       });
 
-      // Deduplicação inteligente de alvos mantendo todos os encontrados
       const mapaNormalizado = new Map();
       alvosEncontrados.forEach(a => {
         const limpo = a.trim();
@@ -2539,7 +2452,6 @@
       let alvoFinal = "";
 
       if (listaFinalAlvos.length > 0) {
-        // NÃO CORTA! Traz todas as pragas encontradas separadas por vírgula
         alvoFinal = listaFinalAlvos.join(", ");
       } else {
         if (/mildio|míldio/i.test(texto)) alvoFinal = "Míldio, Requeima";
@@ -2549,21 +2461,15 @@
         else alvoFinal = "Pragas e Doenças da cultura";
       }
 
-                  // 5. CULTURAS (Motor Universal Agrofit >110 Culturas)
       let culturaFinal = extrairTodasAsCulturas(texto);
-
-// 6. DOSES (Extração inteligente da menor dose comercial sem confundir calda de água)
       let dose = extrairDoseInteligenteBula(texto);
 
-      // 7. CARÊNCIA
       let carencia = 14;
       const matchCarencia = texto.match(/(?:intervalo de segurança|carência|carencia)[^\d]*?(\d+)\s*dias/i);
       if (matchCarencia) {
         carencia = parseInt(matchCarencia[1]);
       }
 
-      // Preenchimento dos campos do formulário
-      // Detecção Automática do Tipo de Ação Fisiológica (Contato, Ingestão, Sistêmico, etc.)
       let tipoAcaoDetectado = "Contato e Ingestão";
       if (/sist[eê]mico/i.test(texto) && /contato/i.test(texto)) {
         tipoAcaoDetectado = "Sistêmico e Contato";
@@ -2610,14 +2516,12 @@
       else if (grupo.includes("FRAC") || /fungicida/i.test(grupo)) classe = "FRAC";
       else if (grupo.includes("HRAC") || /herbicida/i.test(grupo)) classe = "HRAC";
 
-      // MECANISMO ANTIDUPLICATA PARA CADASTRO MANUAL / INDIVIDUAL:
       if (indexExistente !== -1) {
         const confirmar = confirm(`O produto "${nomeInformado}" já se encontra cadastrado no sistema!\n\nDeseja ATUALIZAR a bula e os dados deste defensivo existente?\n\n[OK] Sim, atualizar dados existentes\n[Cancelar] Não, cancelar para não duplicar`);
         if (!confirmar) {
-          return; // Aborta e não cadastra duplicado!
+          return;
         }
 
-        // Atualiza o produto existente sem criar linha duplicada
         produtos[indexExistente].ia = document.getElementById('novoIA').value;
         produtos[indexExistente].grupo = grupo;
         produtos[indexExistente].tipoAcao = document.getElementById('novoTipoAcao').value || 'Contato e Ingestão';
@@ -2648,7 +2552,6 @@
         return;
       }
 
-      // Se for produto novo, cadastra normalmente
       const novo = {
         id: 'prod_' + Date.now(),
         nome: nomeInformado.toUpperCase(),
@@ -2697,8 +2600,6 @@
       document.body.removeChild(link);
     }
 
-    
-    // Fechamento com tecla ESC
     window.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' || e.key === 'Esc') {
         fecharModal();
@@ -2707,10 +2608,6 @@
       }
     });
 
-    
-    // =========================================================================
-    // PASTA DE BULAS / BIBLIOTECA DIGITAL (IndexedDB & LocalStorage)
-    // =========================================================================
     let categoriaRepositorioAtual = '';
 
     function abrirRepositorioBulas() {
@@ -2831,8 +2728,6 @@
       });
     }
 
-
-    
     function exportarBackupCompleto() {
       try {
         const dadosExportacao = {
@@ -2901,6 +2796,49 @@
       reader.readAsText(file);
     }
 
+    // Suporte para Instalação como App Nativo (PWA)
+    let deferredPromptApp;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPromptApp = e;
+      const btn = document.getElementById('btnInstalarAppHeader');
+      if (btn) btn.classList.remove('hidden');
+    });
+
+    function dispararInstalacaoApp() {
+      if (deferredPromptApp) {
+        deferredPromptApp.prompt();
+        deferredPromptApp.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            const btn = document.getElementById('btnInstalarAppHeader');
+            if (btn) btn.classList.add('hidden');
+          }
+          deferredPromptApp = null;
+        });
+      } else {
+        alert("Para instalar no celular:\n\n- No Android (Chrome): Toque nos 3 pontinhos no topo e escolha 'Instalar aplicativo' ou 'Adicionar à tela inicial'.\n\n- No iPhone (Safari): Toque no botão Compartilhar e selecione 'Adicionar à Tela de Início'.");
+      }
+    }
+
+    try {
+      const manifestBlob = new Blob([JSON.stringify({
+        name: "AgroPrescreve • Consultoria Técnica",
+        short_name: "AgroPrescreve",
+        start_url: "./index.html",
+        display: "standalone",
+        background_color: "#064e3b",
+        theme_color: "#065f46",
+        icons: [{
+          src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>",
+          sizes: "192x192 512x512",
+          type: "image/svg+xml"
+        }]
+      })], { type: 'application/json' });
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = URL.createObjectURL(manifestBlob);
+      document.head.appendChild(manifestLink);
+    } catch(e) {}
 
     window.onload = () => {
       popularDropdownCulturas();
