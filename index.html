@@ -34,8 +34,11 @@
       transform: scale(1.05);
     }
 
-    /* MODO RESPONSIVO INTELIGENTE: TABELA NO PC & CARTÕES NO CELULAR */
+    /* =========================================================================
+       MODO RESPONSIVO INTELIGENTE: TABELA LARGA NO PC & CARTÕES NO CELULAR
+       ========================================================================= */
     @media (max-width: 768px) {
+      /* Oculta colgroup e cabeçalho horizontal que espremem o texto no smartphone */
       table colgroup {
         display: none !important;
       }
@@ -47,6 +50,7 @@
         width: 100% !important;
       }
 
+      /* Transforma cada defensivo num Cartão Completo, sem cortar palavras */
       table tr {
         display: block !important;
         background: #ffffff !important;
@@ -76,6 +80,7 @@
         justify-content: flex-end !important;
       }
 
+      /* Rótulo à esquerda de cada dado dentro do cartão móvel */
       table td::before {
         content: attr(data-label);
         font-weight: 700;
@@ -88,6 +93,63 @@
         flex-shrink: 0;
       }
     }
+  
+    /* Modo Escuro / Noturno / Alto Contraste */
+    body.dark-mode {
+      background-color: #0b1320 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark-mode .bg-white {
+      background-color: #131e32 !important;
+      color: #f1f5f9 !important;
+      border-color: #1e293b !important;
+    }
+    body.dark-mode .bg-slate-50,
+    body.dark-mode .bg-slate-50\/50,
+    body.dark-mode .bg-slate-50\/70,
+    body.dark-mode .bg-slate-100 {
+      background-color: #0f172a !important;
+      color: #e2e8f0 !important;
+      border-color: #1e293b !important;
+    }
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+    body.dark-mode .text-slate-800,
+    body.dark-mode .text-slate-900,
+    body.dark-mode .text-slate-700 {
+      color: #f1f5f9 !important;
+    }
+    body.dark-mode .text-slate-600,
+    body.dark-mode .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    body.dark-mode tr:hover {
+      background-color: #1e293b !important;
+    }
+    body.dark-mode .border-slate-200,
+    body.dark-mode .border-slate-100 {
+      border-color: #1e293b !important;
+    }
+    body.dark-mode tr {
+      background: #131e32 !important;
+      border-color: #1e293b !important;
+    }
+    body.dark-mode .cultura-btn {
+      background-color: #1e293b !important;
+      color: #cbd5e1 !important;
+      border-color: #334155 !important;
+    }
+    body.dark-mode .cultura-btn.bg-emerald-800 {
+      background-color: #065f46 !important;
+      color: #ffffff !important;
+      border-color: #047857 !important;
+    }
+
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -105,6 +167,15 @@
         </div>
       </div>
       <div class="flex items-center gap-2 flex-wrap justify-end">
+        <button onclick="toggleModoEscuro()" id="btnModoEscuro" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-emerald-500 shadow-sm cursor-pointer" title="Modo Noturno / Alto Contraste">
+          <i class="fa-solid fa-moon"></i> <span class="hidden sm:inline">Modo Escuro</span>
+        </button>
+        <button onclick="abrirCalculadoraCalda()" class="bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-teal-400 shadow-sm cursor-pointer" title="Calcular calda por tanque">
+          <i class="fa-solid fa-calculator text-amber-300"></i> Calculadora Tanque
+        </button>
+        <button onclick="abrirModalPrescricao()" id="btnPrescricaoHeader" class="bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-extrabold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-300 shadow-sm cursor-pointer" title="Ver Receita / Prescrição Pronta">
+          <i class="fa-solid fa-clipboard-check"></i> Prescrição <span id="badgeQtdPrescricao" class="bg-slate-900 text-amber-300 text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">0</span>
+        </button>
         <button id="btnInstalarAppHeader" onclick="dispararInstalacaoApp()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-extrabold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-300 shadow-sm cursor-pointer" title="Instalar aplicativo no celular ou computador">
           <i class="fa-solid fa-mobile-screen-button"></i> Instalar App
         </button>
@@ -120,6 +191,9 @@
         <input type="file" id="inputRestaurarBackup" accept=".json" class="hidden" onchange="restaurarBackupCompleto(event)">
         <button onclick="exportCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-emerald-500 shadow-sm cursor-pointer" title="Exportar tabela para planilha CSV">
           <i class="fa-solid fa-file-csv"></i> CSV
+        </button>
+        <button onclick="abrirModalEstoqueDiario()" id="btnEstoqueHeader" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-sky-400 shadow-sm cursor-pointer" title="Importar PDF diário de posição de estoque">
+          <i class="fa-solid fa-boxes-packing text-amber-300"></i> Estoque Diário <span id="badgeStatusEstoqueHeader" class="bg-sky-900 text-sky-200 text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">0</span>
         </button>
         <button onclick="openModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="Cadastrar produto ou importar novas bulas PDF">
           <i class="fa-solid fa-file-pdf"></i> Novo Produto / PDF
@@ -172,7 +246,31 @@
 
     <!-- Search & Filter Controls -->
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+      <!-- Chips Rápidos de Classes de Defensivos -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        <span class="text-slate-400 font-bold whitespace-nowrap mr-1"><i class="fa-solid fa-layer-group text-emerald-600"></i> Filtro Rápido:</span>
+        <button onclick="selecionarClasseRapida('')" id="chipClasse_todas" class="chip-classe px-3 py-1.5 rounded-lg border border-emerald-900 bg-emerald-800 text-white font-bold whitespace-nowrap transition cursor-pointer">
+          🌿 Todos
+        </button>
+        <button onclick="selecionarClasseRapida('IRAC')" id="chipClasse_IRAC" class="chip-classe px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-blue-50 text-slate-700 font-semibold whitespace-nowrap transition cursor-pointer">
+          🦟 Inseticidas (IRAC)
+        </button>
+        <button onclick="selecionarClasseRapida('FRAC')" id="chipClasse_FRAC" class="chip-classe px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-rose-50 text-slate-700 font-semibold whitespace-nowrap transition cursor-pointer">
+          🍄 Fungicidas (FRAC)
+        </button>
+        <button onclick="selecionarClasseRapida('HRAC')" id="chipClasse_HRAC" class="chip-classe px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-amber-50 text-slate-700 font-semibold whitespace-nowrap transition cursor-pointer">
+          🌾 Herbicidas (HRAC)
+        </button>
+        <button onclick="selecionarClasseRapida('PIRE')" id="chipClasse_PIRE" class="chip-classe px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-yellow-50 text-slate-700 font-semibold whitespace-nowrap transition cursor-pointer">
+          ⚡ Piretroides (3A)
+        </button>
+        <button onclick="selecionarClasseRapida('BIO')" id="chipClasse_BIO" class="chip-classe px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-emerald-50 text-slate-700 font-semibold whitespace-nowrap transition cursor-pointer">
+          🌱 Biológicos & Verdes
+        </button>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+        <!-- 1. Campo de Pesquisa Geral por Texto -->
         <div class="md:col-span-4 relative">
           <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -189,6 +287,7 @@
           </button>
         </div>
 
+        <!-- 2. Cortina / Dropdown de Cultura -->
         <div class="md:col-span-3">
           <select id="filtroCultura" onchange="aoMudarCulturaSelect(this.value)" class="w-full py-3 px-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-medium text-slate-700">
             <option value="">🌿 Todas as Culturas</option>
@@ -230,12 +329,15 @@
           </select>
         </div>
 
+        <!-- 3. NOVA CORTINA / DROPDOWN DE DOENÇAS & PRAGAS -->
         <div class="md:col-span-3">
           <select id="filtroPragaDropdown" onchange="aoSelecionarPragaDropdown(this.value)" class="w-full py-3 px-3.5 bg-slate-50 border border-slate-300 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
             <option value="">🐛 Todas as Doenças & Pragas</option>
+            <!-- Preenchido dinamicamente com todas as pragas da cultura -->
           </select>
         </div>
 
+        <!-- 4. Cortina / Dropdown de Classe Química (IRAC, FRAC, HRAC) -->
         <div class="md:col-span-2">
           <select id="filtroClasse" onchange="filtrarDados()" class="w-full py-3 px-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-medium text-slate-700">
             <option value="">Todas as Classes</option>
@@ -246,6 +348,7 @@
         </div>
       </div>
 
+      <!-- Barra sutil e limpa de Atalhos de Cultura -->
       <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar flex-1">
           <span class="text-slate-400 font-medium whitespace-nowrap mr-1">Atalho Cultura:</span>
@@ -278,11 +381,14 @@
           </button>
         </div>
 
-        <div class="flex items-center gap-2 whitespace-nowrap self-end sm:self-auto">
+        <div class="flex items-center gap-2 whitespace-nowrap self-end sm:self-auto flex-wrap">
+          <button onclick="alternarFiltroApenasEstoque()" id="btnFiltroApenasEstoque" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 transition cursor-pointer flex items-center gap-1" title="Mostrar somente produtos com saldo positivo no estoque diário">
+            <i class="fa-solid fa-box-open text-sky-600"></i> Só em Estoque
+          </button>
           <span id="badgeStatusAlvoAtivo" class="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
             Nenhuma praga filtrada
           </span>
-          <button onclick="limparFiltroPraga()" class="text-[11px] font-semibold text-slate-500 hover:text-rose-600 transition">
+          <button onclick="limparFiltroPraga()" class="text-[11px] font-semibold text-slate-500 hover:text-rose-600 transition cursor-pointer">
             <i class="fa-solid fa-rotate-left"></i> Limpar Alvo
           </button>
         </div>
@@ -291,40 +397,52 @@
 
     <!-- Main Grid: Table & Visual Analysis -->
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+
+      <!-- Left Column: Table Section & Visual Symptoms Gallery Below -->
       <div class="xl:col-span-9 lg:col-span-8 space-y-5">
+
+        <!-- Table Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-          <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
             <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
               <i class="fa-solid fa-list-check text-emerald-600"></i> Produtos Disponíveis para a Recomendação
             </h2>
-            <span id="badgeContagem" class="text-xs bg-slate-200 px-2.5 py-1 rounded-full font-semibold text-slate-700">0 itens</span>
+            <div class="flex items-center gap-2">
+              <span id="badgeAtualizacaoEstoqueTabela" onclick="abrirModalEstoqueDiario()" class="text-[11px] bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 px-2.5 py-1 rounded-full font-semibold cursor-pointer transition" title="Clique para atualizar o PDF de estoque diário">
+                <i class="fa-solid fa-boxes-stacked text-sky-600"></i> Estoque: Não importado
+              </span>
+              <span id="badgeContagem" class="text-xs bg-slate-200 px-2.5 py-1 rounded-full font-semibold text-slate-700">0 itens</span>
+            </div>
           </div>
 
           <div class="w-full flex-1 overflow-x-hidden p-2 sm:p-0">
             <table class="w-full text-left text-xs table-fixed border-collapse">
               <colgroup>
-                <col style="width: 14%;">
-                <col style="width: 12%;">
-                <col style="width: 13%;">
-                <col style="width: 25%;">
-                <col style="width: 20%;">
-                <col style="width: 8%;">
-                <col style="width: 4%;">
-                <col style="width: 4%;">
+                <col style="width: 3.5%;">
+                <col style="width: 13.5%;">
+                <col style="width: 11%;">
+                <col style="width: 12.5%;">
+                <col style="width: 17.5%;">
+                <col style="width: 13.5%;">
+                <col style="width: 10%;">
+                <col style="width: 10%;">
+                <col style="width: 8.5%;">
               </colgroup>
-              <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider font-bold text-[10.5px] border-b border-slate-200">
+              <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider font-bold text-[10px] border-b border-slate-200">
                 <tr>
-                  <th class="py-2.5 px-3">Produto</th>
+                  <th class="py-2.5 px-1.5 text-center" title="Selecionar para Prescrição"><i class="fa-solid fa-square-check"></i></th>
+                  <th class="py-2.5 px-2.5">Produto</th>
                   <th class="py-2.5 px-2">Ingrediente Ativo</th>
-                  <th class="py-2.5 px-2">Modo de Ação</th>
-                  <th class="py-2.5 px-3">Pragas / Alvos</th>
-                  <th class="py-2.5 px-3">Cultura</th>
+                  <th class="py-2.5 px-2">Mecanismo & Tox</th>
+                  <th class="py-2.5 px-2.5">Pragas / Alvos</th>
+                  <th class="py-2.5 px-2.5">Cultura</th>
                   <th class="py-2.5 px-2 text-center">Dose (20L)</th>
-                  <th class="py-2.5 px-1.5 text-center">Carência</th>
+                  <th class="py-2.5 px-2 text-center bg-sky-50/70 text-sky-900">Estoque</th>
                   <th class="py-2.5 px-1.5 text-center">Ações</th>
                 </tr>
               </thead>
               <tbody id="tabelaCorpo" class="divide-y divide-slate-100 text-slate-700">
+                <!-- Populated by JavaScript -->
               </tbody>
             </table>
             <div id="semResultados" class="hidden py-12 text-center text-slate-400">
@@ -335,7 +453,7 @@
           </div>
         </div>
 
-        <!-- Seção Visual -->
+        <!-- SEÇÃO VISUAL: BUSCADOR DE FOTOS REAIS DA INTERNET & DIAGNÓSTICO -->
         <div id="secaoGaleriaVisual" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-200">
           <div class="p-4 border-b border-slate-100 bg-slate-50/70 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
@@ -356,14 +474,17 @@
             </div>
           </div>
 
+          <!-- Cards das 3 Imagens Reais -->
           <div class="p-5">
             <div id="statusCarregamentoFotos" class="hidden mb-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center gap-2">
               <i class="fa-solid fa-spinner fa-spin text-emerald-600"></i> Buscando fotografias reais de alta resolução na web para o alvo...
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="cardsImagensSintomas">
+              <!-- Preenchido dinamicamente com fotos reais -->
             </div>
 
+            <!-- Dica agronômica / Guia de identificação de campo -->
             <div id="guiaIdentificacao" class="mt-4 p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-xl flex items-start gap-3">
               <div class="text-emerald-700 text-lg mt-0.5"><i class="fa-solid fa-lightbulb"></i></div>
               <div class="text-xs text-emerald-950">
@@ -378,8 +499,10 @@
 
       </div>
 
-      <!-- Right Panel -->
+      <!-- Right Panel: Resistance Management & Chart -->
       <div class="xl:col-span-3 lg:col-span-4 space-y-5">
+        
+        <!-- Resistance Strategy Box -->
         <div class="bg-gradient-to-br from-emerald-900 to-teal-800 text-white p-4 rounded-2xl shadow-sm">
           <div class="flex items-center gap-1.5 text-amber-300 text-[10.5px] font-bold uppercase tracking-wider">
             <i class="fa-solid fa-shield-halved"></i> Diretriz Antirresistência
@@ -389,9 +512,11 @@
             Alterne os mecanismos de ação químico/biológico entre ciclos de pulverização para evitar pressão de seleção e resistência de pragas.
           </p>
           <div id="gruposDisponiveisTags" class="mt-2.5 space-y-1.5 max-h-80 overflow-y-auto pr-1">
+            <!-- Group badges populated by JS -->
           </div>
         </div>
 
+        <!-- Chart Box -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
           <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between">
             <span>Distribuição por Classe Química</span>
@@ -402,6 +527,7 @@
           </div>
         </div>
 
+        <!-- Card de Piretroides (IRAC Grupo 3A) -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
           <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
             <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -417,9 +543,12 @@
             Inseticidas <b>IRAC Grupo 3A</b> (moduladores de canais de sódio). Ação rápida de choque (<i>knockdown</i>) e repelência por contato e ingestão.
           </p>
 
+          <!-- Lista Dinâmica de Piretroides da Base -->
           <div id="listaPiretroidesContainer" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+            <!-- Preenchido dinamicamente pelo JavaScript com os produtos que são piretroides -->
           </div>
 
+          <!-- Rodapé técnico do card -->
           <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
             <button onclick="filtrarApenasPiretroides()" class="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 transition">
               <i class="fa-solid fa-filter"></i> Filtrar só piretroides na tabela
@@ -429,11 +558,170 @@
         </div>
 
       </div>
+
     </div>
+
   </main>
 
+    <!-- MODAL: CALCULADORA AGRONÔMICA DE TANQUE & CALDA -->
+  <div id="modalCalculadora" onclick="if(event.target === this) fecharCalculadoraCalda()" class="fixed inset-0 bg-slate-900/60  z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[92vh] flex flex-col overflow-hidden my-auto border border-slate-200">
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-teal-800 text-white sticky top-0 z-20 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-calculator text-amber-300 text-lg"></i>
+          <div>
+            <h3 class="font-bold text-sm sm:text-base">Calculadora de Calda & Tanque de Pulverização</h3>
+            <p class="text-[11px] text-teal-200">Dimensionamento de calda, dose e número de tanques</p>
+          </div>
+        </div>
+        <button onclick="fecharCalculadoraCalda()" class="w-8 h-8 rounded-full bg-teal-900 hover:bg-rose-600 text-white flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1">
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+          <span class="text-slate-500 text-[10px] font-bold uppercase block">Defensivo Referência:</span>
+          <span id="calcNomeProduto" class="font-extrabold text-slate-900 text-sm block mt-0.5">Selecione ou digite abaixo</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Capacidade do Tanque (Litros):</label>
+            <input type="number" id="calcCapacidadeTanque" value="600" oninput="executarCalculoCalda()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-800">
+            <div class="flex gap-1 mt-1.5 flex-wrap">
+              <button onclick="definirTanqueRapido(20)" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] font-bold cursor-pointer">20L Costal</button>
+              <button onclick="definirTanqueRapido(200)" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] font-bold cursor-pointer">200L</button>
+              <button onclick="definirTanqueRapido(600)" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] font-bold cursor-pointer">600L</button>
+              <button onclick="definirTanqueRapido(2000)" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] font-bold cursor-pointer">2.000L</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Vazão / Taxa de Aplicação (L/ha):</label>
+            <input type="number" id="calcVazaoHa" value="150" oninput="executarCalculoCalda()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-800">
+            <span class="text-[10px] text-slate-400 mt-1 block">Volume de calda pulverizado por hectare</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Dose Recomendada por Hectare:</label>
+            <div class="flex gap-1.5">
+              <input type="number" step="0.01" id="calcDoseValor" value="1.0" oninput="executarCalculoCalda()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-800">
+              <select id="calcDoseUnidade" onchange="executarCalculoCalda()" class="p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-700">
+                <option value="L">L/ha</option>
+                <option value="mL">mL/ha</option>
+                <option value="kg">kg/ha</option>
+                <option value="g">g/ha</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Área Total do Talhão / Lavoura (ha):</label>
+            <input type="number" step="0.1" id="calcAreaTotal" value="10" oninput="executarCalculoCalda()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-800">
+          </div>
+        </div>
+
+        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3">
+          <h4 class="font-bold text-emerald-900 text-xs flex items-center gap-1.5 uppercase tracking-wide">
+            <i class="fa-solid fa-square-poll-vertical text-emerald-600"></i> Resultado do Dimensionamento
+          </h4>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="p-2.5 bg-white rounded-xl border border-emerald-100 shadow-xs">
+              <span class="text-[10px] text-slate-500 font-bold block">Produto / Tanque</span>
+              <span id="resProdutoPorTanque" class="font-extrabold text-emerald-800 text-sm sm:text-base block mt-0.5">4.00 L</span>
+            </div>
+            <div class="p-2.5 bg-white rounded-xl border border-emerald-100 shadow-xs">
+              <span class="text-[10px] text-slate-500 font-bold block">Área p/ Tanque</span>
+              <span id="resAreaPorTanque" class="font-extrabold text-slate-800 text-sm sm:text-base block mt-0.5">4.0 ha</span>
+            </div>
+            <div class="p-2.5 bg-white rounded-xl border border-emerald-100 shadow-xs">
+              <span class="text-[10px] text-slate-500 font-bold block">Total de Tanques</span>
+              <span id="resTotalTanques" class="font-extrabold text-teal-800 text-sm sm:text-base block mt-0.5">2.5 tanques</span>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-emerald-200/60 flex items-center justify-between text-xs text-emerald-950 font-bold">
+            <span>Quantidade Total Necessária no Talhão:</span>
+            <span id="resTotalProdutoTalhao" class="text-sm text-emerald-800 font-extrabold">10.00 L</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 sticky bottom-0 z-20 flex-shrink-0">
+        <button onclick="fecharCalculadoraCalda()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 font-bold text-white rounded-xl transition text-xs cursor-pointer">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GERADOR DE PRESCRIÇÃO / RECEITA TÉCNICA (WHATSAPP & IMPRESSÃO) -->
+  <div id="modalPrescricao" onclick="if(event.target === this) fecharModalPrescricao()" class="fixed inset-0 bg-slate-900/60  z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden my-auto border border-slate-200">
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-emerald-900 text-white sticky top-0 z-20 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-clipboard-check text-amber-300 text-xl"></i>
+          <div>
+            <h3 class="font-bold text-base">Receituário & Recomendação Agronômica</h3>
+            <p class="text-xs text-emerald-200">Resumo técnico formatado para envio direto ao produtor rural</p>
+          </div>
+        </div>
+        <button onclick="fecharModalPrescricao()" class="w-8 h-8 rounded-full bg-emerald-800 hover:bg-rose-600 text-white flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1" id="conteudoPrescricaoParaImpressao">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+          <div>
+            <label class="block font-bold text-slate-600 text-[10px] uppercase">Produtor / Cliente:</label>
+            <input type="text" id="prescProdutor" placeholder="Ex: Fazenda Boa Vista" class="w-full p-1.5 mt-0.5 bg-white border border-slate-300 rounded text-xs font-semibold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 text-[10px] uppercase">Cultura & Área:</label>
+            <input type="text" id="prescCulturaArea" placeholder="Ex: Tomate - 5 ha" class="w-full p-1.5 mt-0.5 bg-white border border-slate-300 rounded text-xs font-semibold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 text-[10px] uppercase">Alvo Principal:</label>
+            <input type="text" id="prescAlvo" placeholder="Ex: Míldio e Tripes" class="w-full p-1.5 mt-0.5 bg-white border border-slate-300 rounded text-xs font-semibold">
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 text-xs flex items-center justify-between">
+            <span>Defensivos Prescritos (<span id="prescQtdItens">0</span> produtos selecionados)</span>
+            <button onclick="limparTodaPrescricao()" class="text-rose-600 hover:underline text-[11px] font-semibold cursor-pointer">Limpar Seleção</button>
+          </h4>
+          <div id="listaItensPrescricao" class="space-y-2">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 text-xs mb-1">Orientações de Aplicação & Ordem de Calda:</label>
+          <textarea id="prescObservacoes" rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium" placeholder="Ex: Aplicar nas primeiras horas da manhã. Utilizar adjuvante adequado. Respeitar o intervalo de reentrada."></textarea>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-100 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2 sticky bottom-0 z-20 flex-shrink-0">
+        <button onclick="fecharModalPrescricao()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 font-semibold text-slate-700 rounded-xl text-xs cursor-pointer">
+          Fechar
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="compartilharPrescricaoWhatsApp()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 font-bold text-white rounded-xl text-xs flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <i class="fa-brands fa-whatsapp text-sm"></i> Enviar no WhatsApp
+          </button>
+          <button onclick="imprimirPrescricao()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 font-bold text-white rounded-xl text-xs flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <i class="fa-solid fa-print"></i> Imprimir / PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Details / Bula Modal -->
-  <div id="modalDetalhes" onclick="if(event.target === this) fecharModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
+  <div id="modalDetalhes" onclick="if(event.target === this) fecharModal()" class="fixed inset-0 bg-slate-900/60  z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-150 my-auto border border-slate-200">
       <div class="p-4 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-slate-100 sticky top-0 z-20 flex-shrink-0">
         <h3 id="modalTitulo" class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">Ficha Técnica do Defensivo</h3>
@@ -442,6 +730,7 @@
         </button>
       </div>
       <div class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1 overscroll-contain" id="modalConteudo">
+        <!-- Detalhes preenchidos dinamicamente -->
       </div>
       <div class="p-4 bg-slate-100 border-t border-slate-200 flex justify-between items-center sticky bottom-0 z-20 flex-shrink-0">
         <button id="btnExcluirModal" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded-xl transition text-xs flex items-center gap-1.5 border border-rose-300 shadow-sm cursor-pointer">
@@ -455,7 +744,7 @@
   </div>
 
   <!-- Add Product / PDF Upload Modal -->
-  <div id="modalNovo" onclick="if(event.target === this) fecharModalNovo()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
+  <div id="modalNovo" onclick="if(event.target === this) fecharModalNovo()" class="fixed inset-0 bg-slate-900/60  z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
         <div>
@@ -466,6 +755,8 @@
       </div>
 
       <div class="p-6 space-y-4 text-xs">
+        
+        <!-- Drag & Drop PDF Area -->
         <div class="border-2 border-dashed border-emerald-400 bg-emerald-50/70 hover:bg-emerald-50 rounded-2xl p-6 text-center transition cursor-pointer relative" id="dropArea">
           <input type="file" id="pdfFileInput" accept="application/pdf" multiple class="absolute inset-0 opacity-0 cursor-pointer" onchange="processarMultiplosPDFs(this.files)">
           <div class="space-y-2 pointer-events-none">
@@ -535,6 +826,11 @@
             <textarea id="novoObs" rows="2" placeholder="Informações de rotação, modo de ação ou toxicologia..." class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500"></textarea>
           </div>
 
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Link Direto da Bula em PDF (Opcional):</label>
+            <input id="novoLinkBula" type="url" placeholder="https://... (deixe em branco para busca automática na ADAPAR)" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500">
+          </div>
+
           <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
             <button type="button" onclick="fecharModalNovo()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 font-semibold text-slate-700 rounded-lg">Cancelar</button>
             <button type="submit" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 font-semibold text-white rounded-lg flex items-center gap-2 shadow-sm">
@@ -542,13 +838,16 @@
             </button>
           </div>
         </form>
+
       </div>
     </div>
   </div>
 
   <!-- Repositório de Bulas / Biblioteca Digital Modal -->
-  <div id="modalRepositorio" onclick="if(event.target === this) fecharRepositorioBulas()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
+  <div id="modalRepositorio" onclick="if(event.target === this) fecharRepositorioBulas()" class="fixed inset-0 bg-slate-900/60  z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-150 my-auto border border-slate-200">
+      
+      <!-- Topo Modal -->
       <div class="p-4 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-emerald-900 text-white sticky top-0 z-20 flex-shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-emerald-700/80 flex items-center justify-center text-amber-300 text-lg shadow-inner">
@@ -566,6 +865,7 @@
         </button>
       </div>
 
+      <!-- Barra de Pesquisa e Filtros da Biblioteca -->
       <div class="p-4 bg-slate-50 border-b border-slate-200 space-y-3 flex-shrink-0">
         <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
           <div class="relative w-full sm:w-80">
@@ -600,8 +900,10 @@
         </div>
       </div>
 
+      <!-- Lista / Grid de Bulas -->
       <div class="p-4 sm:p-5 overflow-y-auto flex-1 overscroll-contain bg-slate-100/50">
         <div id="gridRepositorioBulas" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Preenchido dinamicamente pelo JavaScript -->
         </div>
         <div id="repositorioVazio" class="hidden text-center py-12 text-slate-400">
           <i class="fa-regular fa-folder-open text-4xl mb-2 text-slate-300"></i>
@@ -609,6 +911,7 @@
         </div>
       </div>
 
+      <!-- Rodapé Modal -->
       <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center sticky bottom-0 z-20 flex-shrink-0">
         <div class="text-[11px] text-slate-500 flex items-center gap-2">
           <i class="fa-solid fa-database text-emerald-600"></i>
@@ -618,15 +921,82 @@
           <i class="fa-solid fa-xmark"></i> Fechar
         </button>
       </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORTADOR DE ESTOQUE DIÁRIO EM PDF -->
+  <div id="modalEstoqueDiario" onclick="if(event.target === this) fecharModalEstoqueDiario()" class="fixed inset-0 bg-slate-900/60  z-50 flex items-center justify-center hidden p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden my-auto border border-slate-200">
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-sky-800 text-white sticky top-0 z-20 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-boxes-packing text-amber-300 text-xl"></i>
+          <div>
+            <h3 class="font-bold text-base">Importar Posição de Estoque Diário (PDF)</h3>
+            <p class="text-xs text-sky-200">Cruza automaticamente os saldos do dia com todos os defensivos da tabela</p>
+          </div>
+        </div>
+        <button onclick="fecharModalEstoqueDiario()" class="w-8 h-8 rounded-full bg-sky-900 hover:bg-rose-600 text-white flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1">
+        <div class="border-2 border-dashed border-sky-400 bg-sky-50/70 hover:bg-sky-50 rounded-2xl p-6 text-center transition cursor-pointer relative">
+          <input type="file" id="pdfEstoqueInput" accept="application/pdf" class="absolute inset-0 opacity-0 cursor-pointer" onchange="processarPDFEstoqueDiario(this.files[0])">
+          <div class="space-y-2 pointer-events-none">
+            <div class="w-12 h-12 mx-auto rounded-full bg-sky-100 text-sky-700 flex items-center justify-center shadow-sm">
+              <i class="fa-solid fa-file-invoice text-2xl"></i>
+            </div>
+            <div>
+              <p class="font-bold text-slate-800 text-sm">Clique ou arraste aqui o PDF do Estoque Diário</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">O sistema lê todas as páginas do relatório, identifica os produtos e atualiza as quantidades disponíveis na hora!</p>
+            </div>
+            <div id="statusLeituraEstoque" class="hidden text-xs font-semibold py-2 px-3 rounded-lg inline-flex items-center gap-2"></div>
+          </div>
+        </div>
+
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-[10px] font-bold uppercase text-slate-400 block">Última Atualização:</span>
+            <span id="infoDataEstoqueModal" class="font-bold text-slate-800 text-xs">Nenhum arquivo importado ainda</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="infoResumoCruzamentoModal" class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200">0 produtos vinculados</span>
+            <button onclick="limparEstoqueDiario()" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg font-semibold text-[11px] cursor-pointer" title="Zerar saldos de estoque">
+              <i class="fa-solid fa-trash-can"></i> Limpar Estoque
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-slate-700 text-xs">Conferência Rápida do Estoque Importado:</h4>
+            <input type="text" id="buscaItemEstoqueModal" oninput="renderizarListaConferenciaEstoque()" placeholder="Filtrar item do estoque..." class="px-2.5 py-1 bg-white border border-slate-300 rounded-lg text-[11px] w-48 focus:outline-none focus:ring-1 focus:ring-sky-500">
+          </div>
+          <div id="listaConferenciaEstoque" class="max-h-56 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 bg-white">
+            <div class="p-4 text-center text-slate-400">Importe o PDF acima para visualizar os itens e quantidades lidas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 sticky bottom-0 z-20 flex-shrink-0">
+        <button onclick="fecharModalEstoqueDiario()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 font-bold text-white rounded-xl transition text-xs cursor-pointer">
+          Concluir & Ver Tabela
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    if (typeof pdfjsLib !== 'undefined') { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
 
+    // Catálogo Mestre Completo Agrofit / MAPA (>110 culturas)
     const CATALOGO_AGROFIT_COMPLETO = [{"nome": "Soja", "termos": ["soja"]}, {"nome": "Milho", "termos": ["milho"]}, {"nome": "Algodão", "termos": ["algodao", "algodoeiro"]}, {"nome": "Feijão", "termos": ["feijao", "feijoeiro"]}, {"nome": "Feijão-caupi", "termos": ["feijao caupi", "feijao-caupi", "caupi", "feijao de corda", "feijao-fradinho"]}, {"nome": "Feijão-vagem", "termos": ["feijao vagem", "feijao-vagem"]}, {"nome": "Arroz", "termos": ["arroz", "arroz irrigado", "arroz de sequeiro"]}, {"nome": "Trigo", "termos": ["trigo"]}, {"nome": "Café", "termos": ["cafe", "cafeeiro"]}, {"nome": "Cana-de-açúcar", "termos": ["cana", "cana de acucar", "cana-de-acucar"]}, {"nome": "Sorgo", "termos": ["sorgo"]}, {"nome": "Aveia", "termos": ["aveia"]}, {"nome": "Cevada", "termos": ["cevada"]}, {"nome": "Centeio", "termos": ["centeio"]}, {"nome": "Triticale", "termos": ["triticale"]}, {"nome": "Girassol", "termos": ["girassol"]}, {"nome": "Amendoim", "termos": ["amendoim"]}, {"nome": "Gergelim", "termos": ["gergelim"]}, {"nome": "Mandioca", "termos": ["mandioca", "aipim", "macaxeira"]}, {"nome": "Fumo", "termos": ["fumo", "tabaco"]}, {"nome": "Canola", "termos": ["canola"]}, {"nome": "Mamona", "termos": ["mamona", "mamoneira"]}, {"nome": "Linhaça", "termos": ["linhaca"]}, {"nome": "Milheto", "termos": ["milheto"]}, {"nome": "Citros", "termos": ["citros", "citrus", "laranja", "laranjeira", "limao", "limoeiro", "tangerina", "tangerineira", "mexerica", "bergamota", "pomelo", "lima acida"]}, {"nome": "Uva", "termos": ["uva", "videira", "parreira"]}, {"nome": "Maçã", "termos": ["maca", "macieira"]}, {"nome": "Banana", "termos": ["banana", "bananeira"]}, {"nome": "Manga", "termos": ["manga", "mangueira"]}, {"nome": "Mamão", "termos": ["mamao", "mamoeiro", "papaya"]}, {"nome": "Abacaxi", "termos": ["abacaxi", "ananas", "abacaxizeiro"]}, {"nome": "Melão", "termos": ["melao", "meloeiro"]}, {"nome": "Melancia", "termos": ["melancia", "melancieira"]}, {"nome": "Morango", "termos": ["morango", "morangueiro"]}, {"nome": "Maracujá", "termos": ["maracuja", "maracujazeiro", "passiflora"]}, {"nome": "Pêssego", "termos": ["pessego", "pessegueiro"]}, {"nome": "Nectarina", "termos": ["nectarina", "nectarineira"]}, {"nome": "Ameixa", "termos": ["ameixa", "ameixeira"]}, {"nome": "Pera", "termos": ["pera", "pereira"]}, {"nome": "Goiaba", "termos": ["goiaba", "goiabeira"]}, {"nome": "Abacate", "termos": ["abacate", "abacateiro"]}, {"nome": "Caju", "termos": ["caju", "cajueiro"]}, {"nome": "Figo", "termos": ["figo", "figueira"]}, {"nome": "Caqui", "termos": ["caqui", "caquizeiro"]}, {"nome": "Coco", "termos": ["coco", "coqueiro"]}, {"nome": "Dendê", "termos": ["dende", "dendezeiro", "palma de oleo"]}, {"nome": "Açaí", "termos": ["acai", "acaizeiro"]}, {"nome": "Acerola", "termos": ["acerola", "aceroleira"]}, {"nome": "Graviola", "termos": ["graviola", "gravioleira"]}, {"nome": "Atemoia", "termos": ["atemoia", "pinha", "fruta do conde"]}, {"nome": "Noz-pecã", "termos": ["noz", "noz peca", "noz-peca", "nogueira"]}, {"nome": "Pitaia", "termos": ["pitaia", "pitaya"]}, {"nome": "Romã", "termos": ["roma", "romanzeira"]}, {"nome": "Carambola", "termos": ["carambola", "caramboleira"]}, {"nome": "Jabuticaba", "termos": ["jabuticaba", "jabuticabeira"]}, {"nome": "Cupuaçu", "termos": ["cupuacu", "cupuacueiro"]}, {"nome": "Guaraná", "termos": ["guarana", "guaranazeiro"]}, {"nome": "Cacau", "termos": ["cacau", "cacaueiro"]}, {"nome": "Nêspera", "termos": ["nespera", "nespereira"]}, {"nome": "Mirtilo", "termos": ["mirtilo", "blueberry"]}, {"nome": "Amora", "termos": ["amora", "amoreira"]}, {"nome": "Framboesa", "termos": ["framboesa"]}, {"nome": "Batata", "termos": ["batata", "batata inglesa", "batateira"]}, {"nome": "Batata-doce", "termos": ["batata doce", "batata-doce"]}, {"nome": "Tomate", "termos": ["tomate", "tomateiro", "tomate industrial", "tomate de mesa"]}, {"nome": "Cebola", "termos": ["cebola"]}, {"nome": "Alho", "termos": ["alho"]}, {"nome": "Pimentão", "termos": ["pimentao", "pimentoeiro"]}, {"nome": "Pimenta", "termos": ["pimenta", "pimenteira"]}, {"nome": "Cenoura", "termos": ["cenoura"]}, {"nome": "Beterraba", "termos": ["beterraba"]}, {"nome": "Alface", "termos": ["alface"]}, {"nome": "Repolho", "termos": ["repolho"]}, {"nome": "Couve", "termos": ["couve", "couve manteiga", "couve de folhas"]}, {"nome": "Couve-flor", "termos": ["couve flor", "couve-flor"]}, {"nome": "Brócolis", "termos": ["brocolis", "brocolos"]}, {"nome": "Pepino", "termos": ["pepino", "pepineiro"]}, {"nome": "Abobrinha", "termos": ["abobrinha", "abobrinha italiana"]}, {"nome": "Abóbora", "termos": ["abobora", "jerimum", "moringue"]}, {"nome": "Chuchu", "termos": ["chuchu", "chuchuzeiro"]}, {"nome": "Berinjela", "termos": ["berinjela", "beringela"]}, {"nome": "Quiabo", "termos": ["quiabo", "quiabeiro"]}, {"nome": "Ervilha", "termos": ["ervilha"]}, {"nome": "Grão-de-bico", "termos": ["grao de bico", "grao-de-bico"]}, {"nome": "Lentilha", "termos": ["lentilha"]}, {"nome": "Espinafre", "termos": ["espinafre"]}, {"nome": "Rúcula", "termos": ["rucula"]}, {"nome": "Agrião", "termos": ["agriao"]}, {"nome": "Salsa", "termos": ["salsa", "salsinha"]}, {"nome": "Cebolinha", "termos": ["cebolinha"]}, {"nome": "Coentro", "termos": ["coentro"]}, {"nome": "Manjericão", "termos": ["manjericao"]}, {"nome": "Gengibre", "termos": ["gengibre"]}, {"nome": "Inhame", "termos": ["inhame"]}, {"nome": "Cará", "termos": ["cara"]}, {"nome": "Mandioca-de-mesa", "termos": ["mandioca de mesa"]}, {"nome": "Aspargo", "termos": ["aspargo", "espargo"]}, {"nome": "Alcachofra", "termos": ["alcachofra"]}, {"nome": "Palmito", "termos": ["palmito", "pupunha", "palmeira real"]}, {"nome": "Rabanete", "termos": ["rabanete"]}, {"nome": "Nabo", "termos": ["nabo"]}, {"nome": "Acelga", "termos": ["acelga"]}, {"nome": "Chicória", "termos": ["chicoria", "escarola"]}, {"nome": "Alho-poró", "termos": ["alho poro", "alho-poro"]}, {"nome": "Mostarda", "termos": ["mostarda"]}, {"nome": "Pastagens", "termos": ["pastagem", "pastagens", "brachiaria", "braquiaria", "panicum", "mombaca", "tanzania", "marandu", "capim", "forrageira", "forrageiras", "gramado", "gramados"]}, {"nome": "Eucalipto", "termos": ["eucalipto", "eucalyptus"]}, {"nome": "Pinus", "termos": ["pinus", "pinheiro"]}, {"nome": "Seringueira", "termos": ["seringueira", "hevea"]}, {"nome": "Acácia", "termos": ["acacia"]}, {"nome": "Teca", "termos": ["teca"]}, {"nome": "Flores e Ornamentais", "termos": ["flores", "plantas ornamentais", "ornamentais", "floricultura", "crisantemo", "rosa", "rosas", "orquidea", "orquideas", "anturio", "gérbera", "gerbera", "cravo", "cravos", "begonia", "lirio", "calanchoe", "violeta", "hibisco"]}];
 
+    // Recuperação inteligente e desduplicação de todos os produtos do usuário
     const STORAGE_KEY = 'agro_defensivos_data_v43';
+    const PRODUTOS_INICIAIS = [];
     let produtos = [];
     try {
       const salvo = localStorage.getItem(STORAGE_KEY) || 
@@ -665,24 +1035,63 @@
     }
 
     function normalizarNomeComparacao(nome) {
-      return normalizar(nome || '').replace(/[^a-z0-9]/g, '').trim();
+      if (!nome) return '';
+      let n = normalizar(nome);
+      // Remove sufixos de dosagens, formulações ou embalagens que causam duplicação
+      n = n.replace(/\b(500\s*sp|500sp|15g|20l|br\s*500|ec|sc|wg|wp|sl|ew|me|fs|ce|gr|dp|od|fungicida|inseticida|acaricida|herbicida|bula|receituario|defensivo)\b/gi, ' ');
+      return n.replace(/[^a-z0-9]/g, '').trim();
     }
 
     function deduplicarListaProdutos(lista) {
-      const vistos = new Set();
-      const resultado = [];
+      const mapa = new Map();
+      if (!Array.isArray(lista)) return [];
+      
       lista.forEach(p => {
+        if (!p || !p.nome) return;
         const chave = normalizarNomeComparacao(p.nome);
         if (!chave) {
-          resultado.push(p);
+          mapa.set('id_' + Math.random(), p);
           return;
         }
-        if (!vistos.has(chave)) {
-          vistos.add(chave);
-          resultado.push(p);
+
+        if (!mapa.has(chave)) {
+          mapa.set(chave, { ...p });
+        } else {
+          const existente = mapa.get(chave);
+          
+          if (p.nome.length < existente.nome.length && !p.nome.includes('15G')) {
+            existente.nome = p.nome;
+          }
+
+          if (p.alvo && p.alvo !== existente.alvo) {
+            const alvosExistentes = new Set(existente.alvo.split(/[,;/]\s*/).map(a => a.trim().toLowerCase()));
+            p.alvo.split(/[,;/]\s*/).forEach(a => {
+              const limpo = a.trim();
+              if (limpo && !alvosExistentes.has(limpo.toLowerCase())) {
+                existente.alvo += ', ' + limpo;
+                alvosExistentes.add(limpo.toLowerCase());
+              }
+            });
+          }
+
+          if (p.cultura && p.cultura !== existente.cultura) {
+            const cultsExistentes = new Set(existente.cultura.split(/[,;/]\s*/).map(c => c.trim().toLowerCase()));
+            p.cultura.split(/[,;/]\s*/).forEach(c => {
+              const limpo = c.trim();
+              if (limpo && !cultsExistentes.has(limpo.toLowerCase())) {
+                existente.cultura += ', ' + limpo;
+                cultsExistentes.add(limpo.toLowerCase());
+              }
+            });
+          }
+
+          if ((!existente.dose || /conforme/i.test(existente.dose)) && p.dose && !/conforme/i.test(p.dose)) {
+            existente.dose = p.dose;
+          }
         }
       });
-      return resultado;
+
+      return Array.from(mapa.values());
     }
 
     function extrairTodasAsCulturas(texto) {
@@ -775,6 +1184,13 @@
         p.dose = '100 a 150 mL/ha';
       }
 
+      if ((nomeNorm.includes('premio') || iaNorm.includes('clorantraniliprole')) && !nomeNorm.includes('glifosato')) {
+        p.ia = 'Clorantraniliprole';
+        if (!/antranilamida/i.test(p.grupo || '')) {
+          p.grupo = 'Antranilamida ou diamida antranílica — INSETICIDA (IRAC Grupo 28)';
+        }
+      }
+
       if (p.dose && /([2-9]\d{1,3}|\d{3,})\s*(?:l|litros)\s*(?:\/|por)\s*ha/i.test(p.dose)) {
         p.dose = 'Conforme bula';
       }
@@ -843,8 +1259,12 @@
 
     let chartInstance = null;
 
+    function escapeAttr(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     function normalizar(texto) {
-      return (texto || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      return (texto || '').normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
     }
 
     function setQuery(termo) {
@@ -862,8 +1282,11 @@
       filtrarDados();
     }
 
+    let ultimoTermoFotoBuscado = '';
     async function buscarFotosInternet(termo) {
       const q = normalizar(termo);
+      if (q === ultimoTermoFotoBuscado && document.getElementById('cardsImagensSintomas').innerHTML.trim() !== '') return;
+      ultimoTermoFotoBuscado = q;
       const cardsContainer = document.getElementById('cardsImagensSintomas');
       const status = document.getElementById('statusCarregamentoFotos');
       const nomeLabel = document.getElementById('alvoNomeVisual');
@@ -1228,7 +1651,15 @@
       filtrarDados();
     }
 
+    let timerPesquisa = null;
     function aoDigitarPesquisa() {
+      clearTimeout(timerPesquisa);
+      timerPesquisa = setTimeout(() => {
+        executarPesquisaDebounced();
+      }, 180);
+    }
+
+    function executarPesquisaDebounced() {
       const searchInput = document.getElementById('searchInput');
       const val = searchInput ? searchInput.value.trim() : '';
       
@@ -1371,6 +1802,297 @@
       });
     }
 
+    
+    // DICIONÁRIO DE SINTOMAS PARA BUSCA INTELIGENTE DE CAMPO
+    const DICIONARIO_SINTOMAS = {
+      "folha furada": ["lagarta", "spodoptera", "helicoverpa", "curuquere", "traca", "vaquinha"],
+      "folha comida": ["lagarta", "curuquere", "spodoptera", "vaquinha"],
+      "folha mastigada": ["lagarta", "curuquere", "spodoptera"],
+      "mancha amarela": ["mildio", "cercosporiose", "mancha-alvo", "septoriose"],
+      "mancha de oleo": ["mildio"],
+      "mancha oleosa": ["mildio"],
+      "queima": ["requeima", "crestamento", "phytophthora"],
+      "mofo": ["mofo-branco", "oidio", "botrytis"],
+      "po branco": ["oidio"],
+      "pustula": ["ferrugem"],
+      "po de canela": ["ferrugem"],
+      "folha enrolada": ["pulgao", "tripes", "acaro-branco", "mosca-branca"],
+      "encarquilhamento": ["pulgao", "tripes", "acaro-branco"],
+      "teia": ["acaro", "acaro-rajado", "tetranychus"],
+      "pontilhado": ["acaro", "tripes"],
+      "prateamento": ["tripes", "acaro"],
+      "furo no fruto": ["broca", "helicoverpa", "traca"],
+      "fruto furado": ["broca", "helicoverpa", "traca"],
+      "fungo": ["mildio", "requeima", "antracnose", "ferrugem", "cercosporiose", "mofo-branco", "oidio"],
+      "lagarta": ["lagarta", "spodoptera", "helicoverpa", "curuquere", "traca"],
+      "percevejo": ["percevejo-marrom", "percevejo-verde", "percevejo-barriga-verde", "percevejo"],
+      "fumagina": ["pulgao", "mosca-branca", "cochonilha", "psilideo"],
+      "amarelecimento": ["ferrugem", "mildio", "virose", "nematoides"],
+      "galha": ["nematoide", "meloidogyne"]
+    };
+
+    function obterToxicologiaEReentrada(p) {
+      const ia = normalizar(p.ia || '');
+      const grupo = normalizar(p.grupo || '');
+      const nome = normalizar(p.nome || '');
+
+      let faixa = {
+        cor: 'bg-emerald-600',
+        textoCor: 'text-emerald-700',
+        bordaCor: 'border-emerald-300',
+        bgLeve: 'bg-emerald-50',
+        rotulo: 'Faixa Verde',
+        classe: 'Cat. 5 (Improvável Dano Agudo)',
+        reentrada: '24h (após secagem)'
+      };
+
+      if (/metomil|formetanato|cartap|acefato|fosforado|carbamato/i.test(ia) || /1a|1b/i.test(grupo) || /dicarzol|lannate/i.test(nome)) {
+        faixa = {
+          cor: 'bg-rose-600',
+          textoCor: 'text-rose-700',
+          bordaCor: 'border-rose-300',
+          bgLeve: 'bg-rose-50',
+          rotulo: 'Faixa Vermelha',
+          classe: 'Cat. 1/2 (Altamente Tóxico)',
+          reentrada: '48 horas'
+        };
+      } else if (/cipermetrina|cialotrina|bifentrina|deltametrina|abamectina|clorpirifos|piretr/i.test(ia) || /3a/i.test(grupo)) {
+        faixa = {
+          cor: 'bg-amber-500',
+          textoCor: 'text-amber-800',
+          bordaCor: 'border-amber-300',
+          bgLeve: 'bg-amber-50',
+          rotulo: 'Faixa Amarela',
+          classe: 'Cat. 3 (Moderadamente Tóxico)',
+          reentrada: '24 horas'
+        };
+      } else if (/azoxistrobina|difenoconazol|tebuconazol|acetamiprido|flupiradifurona|cletodim|glifosato/i.test(ia) || /4a|11|3/i.test(grupo)) {
+        faixa = {
+          cor: 'bg-blue-600',
+          textoCor: 'text-blue-700',
+          bordaCor: 'border-blue-300',
+          bgLeve: 'bg-blue-50',
+          rotulo: 'Faixa Azul',
+          classe: 'Cat. 4 (Pouco Tóxico)',
+          reentrada: '24 horas'
+        };
+      }
+
+      return faixa;
+    }
+
+    // Persistência da Prescrição
+    let itensPrescricao = new Set();
+    try {
+      const prescSalva = localStorage.getItem('agroprescreve_prescricao_ids');
+      if (prescSalva) itensPrescricao = new Set(JSON.parse(prescSalva));
+    } catch(e) {}
+
+    function salvarPrescricaoStorage() {
+      try {
+        localStorage.setItem('agroprescreve_prescricao_ids', JSON.stringify(Array.from(itensPrescricao)));
+      } catch(e) {}
+    }
+
+    function atualizarContadorPrescricao() {
+      const badge = document.getElementById('badgeQtdPrescricao');
+      if (badge) badge.textContent = itensPrescricao.size;
+    }
+
+    function alternarSelecaoPrescricao(id, event) {
+      if (event) event.stopPropagation();
+      if (itensPrescricao.has(id)) {
+        itensPrescricao.delete(id);
+      } else {
+        itensPrescricao.add(id);
+      }
+      atualizarContadorPrescricao();
+      salvarPrescricaoStorage();
+    }
+
+    function abrirModalPrescricao() {
+      const modal = document.getElementById('modalPrescricao');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      const container = document.getElementById('listaItensPrescricao');
+      const contador = document.getElementById('prescQtdItens');
+      if (!container) return;
+
+      container.innerHTML = '';
+      const selecionados = produtos.filter(p => itensPrescricao.has(p.id || p.nome));
+      if (contador) contador.textContent = selecionados.length;
+
+      if (selecionados.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-slate-400 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
+            <i class="fa-solid fa-clipboard-list text-3xl mb-2 text-slate-300"></i>
+            <p class="font-bold">Nenhum defensivo selecionado para a receita.</p>
+            <p class="text-xs mt-0.5">Marque as caixas de seleção na primeira coluna da tabela para adicionar.</p>
+          </div>
+        `;
+      } else {
+        selecionados.forEach(p => {
+          const tox = obterToxicologiaEReentrada(p);
+          const div = document.createElement('div');
+          div.className = "p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3";
+          div.innerHTML = `
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full ${tox.cor}"></span>
+                <h4 class="font-bold text-slate-900 text-xs">${p.nome}</h4>
+                <span class="text-[10px] px-1.5 py-0.2 rounded border ${tox.bgLeve} ${tox.textoCor} ${tox.bordaCor} font-bold">${tox.rotulo}</span>
+              </div>
+              <p class="text-[11px] text-slate-600 mt-0.5">${p.ia} &bull; <b class="text-slate-700">Dose:</b> ${p.dose} &bull; <b class="text-emerald-700">Costal (20L):</b> ${calcularDoseBomba20L(p.dose)}</p>
+              <p class="text-[10px] text-slate-500 mt-0.5"><b class="text-slate-600">Reentrada:</b> ${tox.reentrada} | <b class="text-amber-700">Carência:</b> ${p.carencia} dias</p>
+            </div>
+            <button onclick="alternarSelecaoPrescricao('${p.id || p.nome}'); abrirModalPrescricao();" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer" title="Remover da receita">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          `;
+          container.appendChild(div);
+        });
+      }
+    }
+
+    function fecharModalPrescricao() {
+      document.getElementById('modalPrescricao').classList.add('hidden');
+    }
+
+    function limparTodaPrescricao() {
+      itensPrescricao.clear();
+      salvarPrescricaoStorage();
+      atualizarContadorPrescricao();
+      abrirModalPrescricao();
+      filtrarDados();
+    }
+
+    function compartilharPrescricaoWhatsApp() {
+      const selecionados = produtos.filter(p => itensPrescricao.has(p.id || p.nome));
+      if (selecionados.length === 0) {
+        alert("Selecione pelo menos um produto para prescrever.");
+        return;
+      }
+
+      const produtor = document.getElementById('prescProdutor').value.trim() || 'Cliente / Lavoura';
+      const cultura = document.getElementById('prescCulturaArea').value.trim() || 'Cultura em Campo';
+      const alvo = document.getElementById('prescAlvo').value.trim() || 'Manejo Preventivo/Curativo';
+      const obs = document.getElementById('prescObservacoes').value.trim() || 'Seguir boas práticas agrícolas.';
+
+      let texto = "*🌱 AGROPRESCREVE - RECOMENDAÇÃO TÉCNICA*\n\n";
+      texto += `👤 *Produtor:* ${produtor}\n`;
+      texto += `🌾 *Cultura:* ${cultura}\n`;
+      texto += `🐛 *Alvo:* ${alvo}\n\n`;
+      texto += `*📋 PRODUTOS RECOMENDADOS:*\n`;
+      texto += `--------------------------------------\n`;
+
+      selecionados.forEach((p, idx) => {
+        const tox = obterToxicologiaEReentrada(p);
+        texto += `*${idx + 1}. ${p.nome}* (${p.ia})\n`;
+        texto += `   • *Dose:* ${p.dose}\n`;
+        texto += `   • *Bomba 20L:* ${calcularDoseBomba20L(p.dose)}\n`;
+        texto += `   • *Mecanismo:* ${p.grupo}\n`;
+        texto += `   • *Carência:* ${p.carencia} dias | *Reentrada:* ${tox.reentrada}\n`;
+        texto += `   • *Classificação:* ${tox.rotulo}\n\n`;
+      });
+
+      texto += `--------------------------------------\n`;
+      texto += `⚠️ *Orientações:* ${obs}\n\n`;
+      texto += `_Emitido via AgroPrescreve Consultoria_`;
+
+      const urlZap = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
+      window.open(urlZap, '_blank');
+    }
+
+    function imprimirPrescricao() {
+      window.print();
+    }
+
+    // Modo Escuro
+    function toggleModoEscuro() {
+      const body = document.body;
+      body.classList.toggle('dark-mode');
+      const isDark = body.classList.contains('dark-mode');
+      localStorage.setItem('agroprescreve_dark_mode', isDark ? 'true' : 'false');
+      
+      const btn = document.getElementById('btnModoEscuro');
+      if (btn) {
+        btn.innerHTML = isDark 
+          ? '<i class="fa-solid fa-sun text-amber-300"></i> <span class="hidden sm:inline">Modo Claro</span>'
+          : '<i class="fa-solid fa-moon"></i> <span class="hidden sm:inline">Modo Escuro</span>';
+      }
+    }
+
+    // Filtros Rápidos por Chips
+    let classeRapidaAtiva = '';
+    function selecionarClasseRapida(tipo) {
+      classeRapidaAtiva = tipo;
+      document.querySelectorAll('.chip-classe').forEach(btn => {
+        btn.classList.remove('bg-emerald-800', 'text-white', 'border-emerald-900');
+        btn.classList.add('bg-slate-50', 'text-slate-700', 'border-slate-200');
+      });
+
+      const btnAtivo = document.getElementById(tipo ? `chipClasse_${tipo}` : 'chipClasse_todas');
+      if (btnAtivo) {
+        btnAtivo.classList.remove('bg-slate-50', 'text-slate-700', 'border-slate-200');
+        btnAtivo.classList.add('bg-emerald-800', 'text-white', 'border-emerald-900');
+      }
+
+      filtrarDados();
+    }
+
+    // Calculadora de Tanque e Calda
+    let produtoCalculadoraAtual = null;
+    function abrirCalculadoraCalda(prodId) {
+      const modal = document.getElementById('modalCalculadora');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      const nomeLabel = document.getElementById('calcNomeProduto');
+      if (prodId) {
+        produtoCalculadoraAtual = produtos.find(p => (p.id && p.id === prodId) || p.nome === prodId);
+      } else {
+        produtoCalculadoraAtual = null;
+      }
+
+      if (nomeLabel) {
+        if (produtoCalculadoraAtual) {
+          nomeLabel.textContent = `${produtoCalculadoraAtual.nome} (${produtoCalculadoraAtual.ia}) - Dose: ${produtoCalculadoraAtual.dose}`;
+        } else {
+          nomeLabel.textContent = "Cálculo Geral / Personalizado";
+        }
+      }
+
+      executarCalculoCalda();
+    }
+
+    function fecharCalculadoraCalda() {
+      document.getElementById('modalCalculadora').classList.add('hidden');
+    }
+
+    function definirTanqueRapido(litros) {
+      document.getElementById('calcCapacidadeTanque').value = litros;
+      executarCalculoCalda();
+    }
+
+    function executarCalculoCalda() {
+      const capacidade = parseFloat(document.getElementById('calcCapacidadeTanque').value) || 600;
+      const vazao = parseFloat(document.getElementById('calcVazaoHa').value) || 150;
+      const dose = parseFloat(document.getElementById('calcDoseValor').value) || 1.0;
+      const unidade = document.getElementById('calcDoseUnidade').value;
+      const area = parseFloat(document.getElementById('calcAreaTotal').value) || 10;
+
+      const areaPorTanque = vazao > 0 ? (capacidade / vazao) : 0;
+      const prodPorTanque = areaPorTanque * dose;
+      const totalTanques = areaPorTanque > 0 ? (area / areaPorTanque) : 0;
+      const totalProduto = area * dose;
+
+      document.getElementById('resProdutoPorTanque').textContent = `${prodPorTanque.toFixed(2)} ${unidade}`;
+      document.getElementById('resAreaPorTanque').textContent = `${areaPorTanque.toFixed(1)} ha`;
+      document.getElementById('resTotalTanques').textContent = `${totalTanques.toFixed(1)} tanques`;
+      document.getElementById('resTotalProdutoTalhao').textContent = `${totalProduto.toFixed(2)} ${unidade}`;
+    }
+
     function filtrarApenasPiretroides() {
       const searchInput = document.getElementById('searchInput');
       if (searchInput) {
@@ -1384,7 +2106,18 @@
       const q = normalizar(qInput);
       const cultura = document.getElementById('filtroCultura') ? document.getElementById('filtroCultura').value : '';
       const classe = document.getElementById('filtroClasse') ? document.getElementById('filtroClasse').value : '';
-      
+      const pragaDrop = document.getElementById('filtroPragaDropdown') ? document.getElementById('filtroPragaDropdown').value : '';
+
+      // Expansão inteligente por sintomas de lavoura
+      let termosEquivalentes = [q];
+      if (typeof DICIONARIO_SINTOMAS !== 'undefined') {
+        for (const sintoma in DICIONARIO_SINTOMAS) {
+          if (q.includes(sintoma)) {
+            termosEquivalentes.push(...DICIONARIO_SINTOMAS[sintoma]);
+          }
+        }
+      }
+
       const btnClear = document.getElementById('clearSearch');
       if (btnClear) {
         if (q.length > 0) {
@@ -1395,17 +2128,39 @@
       }
 
       const filtrados = produtos.filter(p => {
-        const matchTexto = !q || 
-          normalizar(p.alvo).includes(q) || 
-          normalizar(p.nome).includes(q) || 
-          normalizar(p.ia).includes(q) || 
-          normalizar(p.grupo).includes(q) ||
-          normalizar(p.tipoAcao || '').includes(q);
+        const alvoNorm = normalizar(p.alvo || '');
+        const nomeNorm = normalizar(p.nome || '');
+        const iaNorm = normalizar(p.ia || '');
+        const grupoNorm = normalizar(p.grupo || '');
+        const tipoNorm = normalizar(p.tipoAcao || '');
 
-        const matchCultura = !cultura || normalizar(p.cultura).includes(normalizar(cultura));
+        let matchTexto = !q;
+        if (q) {
+          matchTexto = termosEquivalentes.some(termo => 
+            alvoNorm.includes(termo) || nomeNorm.includes(termo) || iaNorm.includes(termo) || grupoNorm.includes(termo) || tipoNorm.includes(termo)
+          );
+        }
+
+        const matchCultura = !cultura || normalizar(p.cultura || '').includes(normalizar(cultura));
         const matchClasse = !classe || (p.grupo && p.grupo.includes(classe));
+        const matchPraga = !pragaDrop || alvoNorm.includes(normalizar(pragaDrop));
 
-        return matchTexto && matchCultura && matchClasse;
+        let matchClasseRapida = true;
+        if (typeof classeRapidaAtiva !== 'undefined' && classeRapidaAtiva) {
+          if (classeRapidaAtiva === 'IRAC') matchClasseRapida = /IRAC|inseticida|acaricida/i.test(grupoNorm);
+          else if (classeRapidaAtiva === 'FRAC') matchClasseRapida = /FRAC|fungicida/i.test(grupoNorm);
+          else if (classeRapidaAtiva === 'HRAC') matchClasseRapida = /HRAC|herbicida/i.test(grupoNorm);
+          else if (classeRapidaAtiva === 'PIRE') matchClasseRapida = /3a|piretr/i.test(grupoNorm) || /cipermetrina|cialotrina|bifentrina/i.test(iaNorm);
+          else if (classeRapidaAtiva === 'BIO') matchClasseRapida = /bacillus|biologico|microbiologico|extrato/i.test(iaNorm) || /biologico/i.test(grupoNorm);
+        }
+
+        let matchEstoque = true;
+        if (typeof apenasEmEstoqueAtivo !== 'undefined' && apenasEmEstoqueAtivo) {
+          const infoEst = obterInfoEstoqueProduto(p);
+          matchEstoque = infoEst && infoEst.disponivel;
+        }
+
+        return matchTexto && matchCultura && matchClasse && matchPraga && matchClasseRapida && matchEstoque;
       });
 
       renderTabela(filtrados);
@@ -1429,7 +2184,12 @@
       }
       semResultados.classList.add('hidden');
 
-      lista.forEach((p) => {
+      const listaVisivel = lista.slice(0, 120);
+      listaVisivel.forEach((p) => {
+        const idProd = p.id || p.nome;
+        const tox = obterToxicologiaEReentrada(p);
+        const selecionado = itensPrescricao.has(idProd);
+
         let grupoCor = "bg-slate-100 text-slate-800 border-slate-300";
         if (p.grupo && p.grupo.includes("IRAC")) grupoCor = "bg-blue-50 text-blue-700 border-blue-200";
         else if (p.grupo && p.grupo.includes("FRAC")) grupoCor = "bg-rose-50 text-rose-700 border-rose-200";
@@ -1438,56 +2198,59 @@
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition border-b border-slate-100 cursor-pointer group";
         tr.onclick = (e) => {
-          if (!e.target.closest('button')) {
+          if (!e.target.closest('button') && !e.target.closest('input')) {
             abrirDetalhes(p);
           }
         };
 
-        const idProd = p.id || p.nome;
-
         tr.innerHTML = `
+          <td data-label="Prescrição" class="py-2.5 px-2 text-center align-top">
+            <input type="checkbox" ${selecionado ? 'checked' : ''} data-id="${escapeAttr(idProd)}" onchange="alternarSelecaoPrescricao(this.dataset.id, event)" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer" title="Marcar para Receituário / WhatsApp">
+          </td>
           <td data-label="Produto" class="py-2.5 px-3 align-top overflow-hidden">
-            <button onclick="event.stopPropagation(); abrirBulaEmNovaAba('${idProd}')" class="flex items-start gap-1.5 text-left hover:text-emerald-700 transition cursor-pointer group/btn" title="Clique para abrir a Bula em PDF">
-              <span class="w-2 h-2 rounded-full ${p.carencia <= 7 ? 'bg-emerald-500' : 'bg-amber-500'} flex-shrink-0 mt-1"></span>
-              <span class="hover:underline underline-offset-2 text-xs font-bold text-slate-900 break-words leading-tight">${p.nome}</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400 group-hover/btn:text-emerald-600 transition ml-0.5 mt-1 flex-shrink-0"></i>
+            <button data-id="${escapeAttr(idProd)}" onclick="event.stopPropagation(); abrirBulaEmNovaAba(this.dataset.id)" class="flex items-start gap-1.5 text-left hover:text-emerald-700 transition cursor-pointer group/btn" title="Clique para abrir a Bula em PDF">
+              <span class="w-2.5 h-2.5 rounded-full ${tox.cor} flex-shrink-0 mt-1" title="${tox.rotulo}"></span>
+              <span class="hover:underline text-xs font-bold text-slate-900 break-words leading-tight">${p.nome}</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400 group-hover/btn:text-emerald-600 ml-0.5 mt-1 flex-shrink-0"></i>
             </button>
           </td>
-          <td data-label="Ingrediente Ativo" class="py-2.5 px-2 align-top text-slate-700 text-xs font-medium break-words leading-tight overflow-hidden">${p.ia}</td>
-          <td data-label="Modo de Ação" class="py-2.5 px-2 align-top overflow-hidden">
+          <td data-label="Ingrediente Ativo" class="py-2.5 px-2 align-top text-slate-700 text-xs font-medium break-words leading-tight">${p.ia}</td>
+          <td data-label="Modo & Tox" class="py-2.5 px-2 align-top">
             <div class="flex flex-col gap-1 items-start sm:items-start items-end">
               <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border ${grupoCor} leading-tight break-words">${p.grupo}</span>
-              <span class="inline-flex items-center gap-1 text-[9px] font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 leading-tight">
-                <i class="fa-solid fa-atom text-emerald-600 text-[8px]"></i> ${p.tipoAcao || 'Ação Fisiológica'}
-              </span>
+              <div class="flex items-center gap-1 flex-wrap">
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border ${tox.bgLeve} ${tox.textoCor} ${tox.bordaCor}" title="${tox.classe}">${tox.rotulo}</span>
+                <span class="text-[9px] text-slate-500 font-semibold" title="Intervalo de Reentrada"><i class="fa-solid fa-clock"></i> ${tox.reentrada}</span>
+              </div>
             </div>
           </td>
-          <td data-label="Pragas / Alvos" class="py-2.5 px-3 align-top font-semibold text-emerald-800 text-xs leading-relaxed overflow-hidden">
-            <div class="sm:line-clamp-3 leading-relaxed break-words" title="${p.alvo}">${p.alvo}</div>
+          <td data-label="Pragas / Alvos" class="py-2.5 px-3 align-top font-semibold text-emerald-800 text-xs leading-relaxed">
+            <div class="sm:line-clamp-3 leading-relaxed break-words" title="${escapeAttr(p.alvo)}">${p.alvo}</div>
           </td>
-          <td data-label="Cultura" class="py-2.5 px-3 align-top text-slate-600 text-xs leading-relaxed overflow-hidden">
-            <div class="sm:line-clamp-3 leading-relaxed break-words" title="${p.cultura}">
-              ${p.cultura}
-            </div>
+          <td data-label="Cultura" class="py-2.5 px-3 align-top text-slate-600 text-xs leading-relaxed">
+            <div class="sm:line-clamp-3 leading-relaxed break-words" title="${escapeAttr(p.cultura)}">${p.cultura}</div>
           </td>
-          <td data-label="Dose (20L)" class="py-2.5 px-2 align-top sm:text-center text-right overflow-hidden">
+          <td data-label="Dose (20L)" class="py-2.5 px-2 align-top sm:text-center text-right">
             <div class="font-bold text-slate-800 text-xs break-words">${p.dose}</div>
             <div class="inline-flex items-center justify-center gap-1 text-[10px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 px-1.5 py-0.5 rounded mt-1 shadow-xs whitespace-nowrap" title="Dose para bomba costal de 20 litros">
               <i class="fa-solid fa-spray-can text-emerald-600 text-[9px]"></i> <span>${calcularDoseBomba20L(p.dose)} / 20L</span>
             </div>
           </td>
-          <td data-label="Carência" class="py-2.5 px-1.5 align-top text-center whitespace-nowrap">
-            <span class="font-bold text-slate-800 text-xs px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">${p.carencia}d</span>
+          <td data-label="Estoque" class="py-2.5 px-2 align-top sm:text-center text-right">
+            ${renderizarCelulaEstoque(p)}
           </td>
           <td data-label="Ações" class="py-2.5 px-1.5 align-top text-center whitespace-nowrap">
             <div class="flex items-center justify-end sm:justify-center gap-1">
-              <button onclick="event.stopPropagation(); abrirBulaEmNovaAba('${idProd}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer" title="Abrir Bula em PDF">
+              <button data-id="${escapeAttr(idProd)}" onclick="event.stopPropagation(); abrirCalculadoraCalda(this.dataset.id)" class="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded transition cursor-pointer" title="Calcular Calda deste Produto">
+                <i class="fa-solid fa-calculator text-sm"></i>
+              </button>
+              <button data-id="${escapeAttr(idProd)}" onclick="event.stopPropagation(); abrirBulaEmNovaAba(this.dataset.id)" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer" title="Abrir Bula em PDF">
                 <i class="fa-solid fa-file-pdf text-sm"></i>
               </button>
-              <button onclick='abrirDetalhes(${JSON.stringify(p)})' class="p-1.5 text-slate-400 hover:text-emerald-700 hover:bg-slate-100 rounded transition cursor-pointer" title="Ver Ficha Técnica">
+              <button data-id="${escapeAttr(idProd)}" onclick="event.stopPropagation(); abrirDetalhesPorId(this.dataset.id)" class="p-1.5 text-slate-400 hover:text-emerald-700 hover:bg-slate-100 rounded transition cursor-pointer" title="Ver Ficha Técnica">
                 <i class="fa-solid fa-circle-info text-sm"></i>
               </button>
-              <button onclick='event.stopPropagation(); excluirProduto("${idProd}")' class="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded transition cursor-pointer" title="Excluir este produto">
+              <button data-id="${escapeAttr(idProd)}" onclick="event.stopPropagation(); excluirProduto(this.dataset.id)" class="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded transition cursor-pointer" title="Excluir este produto">
                 <i class="fa-solid fa-trash-can text-sm"></i>
               </button>
             </div>
@@ -1594,7 +2357,7 @@
 
         let badgeGrupoCor = "bg-amber-400/20 text-amber-200 border-amber-300/40";
         if (p.grupo && /FRAC|fungicida/i.test(p.grupo)) badgeGrupoCor = "bg-rose-400/20 text-rose-200 border-rose-300/40";
-        if (p.grupo && /IRAC|inseticida/i.test(p.grupo)) badgeGrupoCor = "bg-blue-400/20 text-blue-200 border-blue-300/40";
+        if (p.grupo && /IRAC|inseticida|acaricida/i.test(p.grupo)) badgeGrupoCor = "bg-blue-400/20 text-blue-200 border-blue-300/40";
 
         const badgeCurta = formatarGrupoCurto(p.grupo);
 
@@ -1651,6 +2414,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: false,
           plugins: {
             legend: {
               position: 'bottom',
@@ -1748,6 +2512,11 @@
       }
 
       return doseStr;
+    }
+
+    function abrirDetalhesPorId(idOuNome) {
+      const p = produtos.find(item => (item.id && item.id === idOuNome) || item.nome === idOuNome);
+      if (p) abrirDetalhes(p);
     }
 
     function abrirDetalhes(p) {
@@ -1868,78 +2637,70 @@
 
     window.pdfSessionCache = window.pdfSessionCache || new Map();
 
-    async function abrirBulaEmNovaAba(produtoIdOuNome) {
+        async function abrirBulaEmNovaAba(produtoIdOuNome) {
       const prod = produtos.find(p => (p.id && p.id === produtoIdOuNome) || p.nome === produtoIdOuNome);
       if (!prod) return;
 
-      const pId = prod.id || prod.nome;
-      const queryAgrofit = encodeURIComponent('bula ' + prod.nome + ' pdf agrofit mapa');
-      const linkMAPA = 'https://www.google.com/search?q=' + queryAgrofit;
+      const nomeLimpo = prod.nome.replace(/[®™+]/g, ' ').replace(/\s+/g, ' ').trim();
+      const queryAdapar = encodeURIComponent(`site:adapar.pr.gov.br filetype:pdf ${nomeLimpo}`);
+      const linkAdapar = `https://www.google.com/search?q=${queryAdapar}`;
 
-      const novaAba = window.open('about:blank', '_blank');
-
-      let blobPDF = window.pdfSessionCache ? (window.pdfSessionCache.get(pId) || window.pdfSessionCache.get(prod.nome)) : null;
-      if (!blobPDF && typeof obterPDFDoBanco === 'function') {
-        try {
-          blobPDF = await obterPDFDoBanco(pId);
-          if (!blobPDF && prod.nome) {
-            blobPDF = await obterPDFDoBanco(prod.nome);
-          }
-        } catch (err) {
-          console.warn("Erro ao ler banco IndexedDB:", err);
-        }
-      }
-
-      if (blobPDF) {
-        const fileURL = URL.createObjectURL(blobPDF);
-        const nomeArquivoDownload = 'Bula_' + prod.nome.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf';
-        
-        if (novaAba) {
-          novaAba.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Bula Oficial - ' + prod.nome + '</title>' +
-            '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">' +
-            '<style>' +
-            '*{box-sizing:border-box}body{margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif;height:100vh;display:flex;flex-direction:column;background:#0f172a;color:#f8fafc}' +
-            '.topbar{background:#064e3b;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid #047857;box-shadow:0 2px 8px rgba(0,0,0,0.3);flex-shrink:0}' +
-            '.prod-info{display:flex;align-items:center;gap:10px}' +
-            '.prod-title{font-size:16px;font-weight:800;color:#fff}' +
-            '.prod-sub{font-size:11px;color:#a7f3d0}' +
-            '.actions{display:flex;gap:8px;align-items:center}' +
-            '.btn{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;transition:all 0.2s}' +
-            '.btn-download{background:#10b981;color:#064e3b}' +
-            '.btn-download:hover{background:#34d399}' +
-            '.btn-agrofit{background:#047857;color:#fff;border:1px solid #10b981}' +
-            '.btn-agrofit:hover{background:#059669}' +
-            '.btn-close{background:#334155;color:#f8fafc}' +
-            '.btn-close:hover{background:#475569}' +
-            '.viewer-wrap{flex:1;width:100%;height:100%;position:relative;background:#1e293b}' +
-            'iframe{width:100%;height:100%;border:none;background:#fff}' +
-            '</style></head><body>' +
-            '<div class="topbar">' +
-            '<div class="prod-info">' +
-            '<i class="fa-solid fa-file-pdf" style="color:#ef4444;font-size:22px"></i>' +
-            '<div><div class="prod-title">' + prod.nome + '</div><div class="prod-sub">' + (prod.ia || 'Ingrediente Ativo') + ' &bull; ' + (prod.grupo || 'Mecanismo') + '</div></div>' +
-            '</div>' +
-            '<div class="actions">' +
-            '<a href="' + fileURL + '" download="' + nomeArquivoDownload + '" class="btn btn-download" title="Salvar o arquivo PDF no computador"><i class="fa-solid fa-download"></i> Baixar Bula PDF</a>' +
-            '<a href="' + linkMAPA + '" target="_blank" class="btn btn-agrofit"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consultar no Agrofit</a>' +
-            '<button onclick="window.close()" class="btn btn-close"><i class="fa-solid fa-xmark"></i> Fechar Aba</button>' +
-            '</div>' +
-            '</div>' +
-            '<div class="viewer-wrap">' +
-            '<iframe src="' + fileURL + '#toolbar=1&navpanes=0" id="bulaFrame"></iframe>' +
-            '</div>' +
-            '</body></html>');
-          novaAba.document.close();
-        } else {
-          window.location.href = fileURL;
-        }
+      // 1. Se houver link externo direto cadastrado, abre imediatamente
+      if (prod.linkBula && prod.linkBula.startsWith('http')) {
+        window.open(prod.linkBula, '_blank');
         return;
       }
 
+      // Abre a aba imediatamente no clique para evitar bloqueio de pop-up
+      const novaAba = window.open('', '_blank');
       if (novaAba) {
-        novaAba.location.href = linkMAPA;
+        novaAba.document.write('<html><body style="font-family:sans-serif;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><h3>Carregando bula oficial...</h3></body></html>');
+      }
+
+      // 2. Busca o PDF salvo na memória ou no banco local (IndexedDB)
+      let blobPDF = window.pdfSessionCache ? (window.pdfSessionCache.get(prod.id) || window.pdfSessionCache.get(prod.nome)) : null;
+      if (!blobPDF && typeof obterPDFDoBanco === 'function') {
+        try {
+          blobPDF = await obterPDFDoBanco(prod.id) || await obterPDFDoBanco(prod.nome);
+        } catch (e) {}
+      }
+
+      // 3. Se encontrou o PDF local, converte para DataURL (Base64) para evitar o bug de tela branca "blob:null" da extensão Adobe Acrobat
+      if (blobPDF) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const dataUrl = e.target.result;
+          const nomeArq = 'Bula_' + prod.nome.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf';
+          if (novaAba) {
+            novaAba.document.open();
+            novaAba.document.write(
+              '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Bula - ' + prod.nome + '</title>' +
+              '<style>*{box-sizing:border-box}body{margin:0;height:100vh;display:flex;flex-direction:column;background:#0f172a;font-family:system-ui,sans-serif}' +
+              '.bar{background:#064e3b;color:#fff;padding:10px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0}' +
+              '.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;cursor:pointer;border:none}' +
+              '.btn-dl{background:#10b981;color:#064e3b}.btn-web{background:#047857;color:#fff;border:1px solid #10b981}.btn-cl{background:#334155;color:#fff}' +
+              'embed,iframe{flex:1;width:100%;height:100%;border:none;background:#fff}</style></head><body>' +
+              '<div class="bar"><div><b>' + prod.nome + '</b> <span style="font-size:11px;color:#a7f3d0">(' + (prod.ia || 'Defensivo') + ')</span></div>' +
+              '<div style="display:flex;gap:8px">' +
+              '<a href="' + dataUrl + '" download="' + nomeArq + '" class="btn btn-dl">⬇ Baixar PDF</a>' +
+              '<a href="' + linkAdapar + '" target="_blank" class="btn btn-web">Buscar na ADAPAR</a>' +
+              '<button onclick="window.close()" class="btn btn-cl">Fechar</button>' +
+              '</div></div>' +
+              '<embed src="' + dataUrl + '" type="application/pdf" />' +
+              '</body></html>'
+            );
+            novaAba.document.close();
+          }
+        };
+        reader.readAsDataURL(blobPDF);
+        return;
+      }
+
+      // 4. Se não há PDF físico salvo nesta máquina, direciona diretamente para a busca oficial na ADAPAR
+      if (novaAba) {
+        novaAba.location.href = linkAdapar;
       } else {
-        window.open(linkMAPA, '_blank');
+        window.open(linkAdapar, '_blank');
       }
     }
 
@@ -2015,7 +2776,7 @@
 
       setTimeout(() => {
         fecharModalNovo();
-        alert(`Importação em Lote Concluída!\n\nNovos produtos adicionados: ${cadastrados}\nBulas duplicadas impedidas (já existentes): ${duplicadosIgnorados.length}${duplicadosIgnorados.length > 0 ? '\n\nProdutos ignorados:\n- ' + duplicadosIgnorados.slice(0, 10).join('\n- ') : ''}`);
+        alert("Importação em Lote Concluída!\n\nNovos produtos adicionados: " + cadastrados + "\nBulas duplicadas impedidas (já existentes): " + duplicadosIgnorados.length + (duplicadosIgnorados.length > 0 ? "\n\nProdutos ignorados:\n- " + duplicadosIgnorados.slice(0, 10).join("\n- ") : ""));
       }, 1500);
     }
 
@@ -2050,7 +2811,99 @@
       return "Conforme bula";
     }
 
-    function extrairObjetoAgronomico(texto, nomeArquivo) {
+        function extrairIAeGrupoBula(texto) {
+      // 1. Extrai a seção oficial de COMPOSIÇÃO (primeiros ~2500 caracteres ou bloco COMPOSIÇÃO até GRUPO/CONTEÚDO)
+      const blocoComposicaoMatch = texto.match(/COMPOSI[ÇC][AÃ]O\s*:([\s\S]{10,1200}?)(?:CONTE[UÚ]DO|CLASSE|GRUPO\s+QU[IÍ]MICO|TIPO\s+DE\s+FORMULA[ÇC][AÃ]O|INSTRU[ÇC][OÕ]ES)/i);
+      const textoComposicao = blocoComposicaoMatch ? blocoComposicaoMatch[1] : texto.slice(0, 2200);
+
+      let iasEncontrados = [];
+
+      // Padrão oficial MAPA: nome químico seguido de "(INGREDIENTE ATIVO) .......... 200,0 g/L"
+      const regexParentesesMapa = /\(([A-ZÇÃÕÁÉÍÓÚÂÊÔ][A-ZÇÃÕÁÉÍÓÚÂÊÔa-zçãõáéíóúâêô0-9\s\-,+]{2,65}?)\)\s*\.{2,}/g;
+      let mPar;
+      while ((mPar = regexParentesesMapa.exec(textoComposicao)) !== null) {
+        let candidato = mPar[1].trim();
+        if (!/^(?:m\/v|m\/m|p\/v|p\/p|equivalente|is[oô]meros|mistura|outros|ingredientes|inert)/i.test(candidato) && candidato.length >= 4) {
+          // Formata em Capitalização Amigável (ex: CLORANTRANILIPROLE -> Clorantraniliprole)
+          const formatado = candidato.charAt(0).toUpperCase() + candidato.slice(1).toLowerCase();
+          if (!iasEncontrados.some(x => normalizar(x) === normalizar(formatado))) {
+            iasEncontrados.push(formatado);
+          }
+        }
+      }
+
+      // Fallback: busca na lista conhecida APENAS dentro do bloco COMPOSIÇÃO (nunca no texto inteiro da bula!)
+      if (iasEncontrados.length === 0) {
+        const listaIAs = [
+          "Benalaxil", "Mancozebe", "Tiofanato-metílico", "Fluazinam", "Acetamiprido",
+          "Flupiradifurona", "Pimetrozina", "Flonicamida", "Metomil", "Cloridrato de Cartape",
+          "Cartape", "Abamectina", "Tiametoxam", "Lambda-cialotrina", "Flubendiamida",
+          "Azoxistrobina", "Difenoconazol", "Cletodim", "Glifosato", "Clorantraniliprole",
+          "Cipermetrina", "Imidacloprido", "Tebuconazol", "Protioconazol", "Trifloxistrobina",
+          "Picoxistrobina", "Pyraclostrobina", "Metalaxil", "Dimetomorfe", "Cimoxanil",
+          "Acefato", "Clorpirifós", "Bifentrina", "Deltametrina", "Beta-ciflutrina", "Diafentiuron",
+          "Cloridrato de Formetanato", "Formetanato", "Lufenuron", "Tiodicarbe", "Piridabem",
+          "Espinetoram", "Esfinvalerato", "Indoxacarbe", "Novaluron", "Triflumuron", "Metoxifenozida",
+          "Clorfenapir", "Espirodiclofeno", "Hexitiazoxi", "Propargito", "Etoxazol", "Bifenazato",
+          "Ciproconazol", "Epoxiconazol", "Flutriafol", "Ciproconazol", "Boscalida", "Fluxapiroxade",
+          "Bixafem", "Benzovindiflupir", "Clorotalonil", "Oxicloreto de cobre", "Hidróxido de cobre",
+          "Enxofre", "Captana", "Folpete", "Iprodiona", "Procimidona", "Fludioxonil", "Ciprodinil",
+          "Pirimetanil", "Mandipropamida", "Ciazofamida", "Ametoctradina", "Zoxamida", "Propamocarbe",
+          "Atrazina", "Mesotriona", "Tembotriona", "Nicosulfuron", "2,4-D", "Dicamba", "Paraquate",
+          "Glufosinato", "Diquate", "S-metolacloro", "Trifluralina", "Pendimetalina", "Sulfentrazona",
+          "Flumioxazina", "Fomesafem", "Imazetapir", "Clorimurom-etílico", "Halossulfurom", "Saflufenacil"
+        ];
+        listaIAs.forEach(item => {
+          const reg = new RegExp(`\\b${item}\\b`, 'i');
+          if (reg.test(textoComposicao)) {
+            iasEncontrados.push(item);
+          }
+        });
+      }
+
+      const iaFinal = iasEncontrados.length > 0 ? iasEncontrados.join(" + ") : "Ingrediente ativo especificado em bula";
+
+      // 2. Extrai o Grupo Químico oficial (ex: "Antranilamida ou diamida antranílica") e o Código IRAC/FRAC/HRAC (ex: "Grupo 28")
+      let codigoGrupo = "";
+      const matchGrupo = texto.slice(0, 3500).match(/GRUPO\s+([A-Z0-9\s+]+?)\s+(INSETICIDA|FUNGICIDA|HERBICIDA|ACARICIDA)/i);
+      if (matchGrupo) {
+        const codigos = matchGrupo[1].trim().toUpperCase();
+        const tipo = matchGrupo[2].toUpperCase();
+        let prefixo = "IRAC";
+        if (tipo === "FUNGICIDA") prefixo = "FRAC";
+        if (tipo === "HERBICIDA") prefixo = "HRAC";
+        codigoGrupo = `${tipo} (${prefixo} Grupo ${codigos})`;
+      } else {
+        if (/fungicida/i.test(texto.slice(0, 1500))) codigoGrupo = "Fungicida (FRAC)";
+        else if (/inseticida|acaricida/i.test(texto.slice(0, 1500))) codigoGrupo = "Inseticida (IRAC)";
+        else if (/herbicida/i.test(texto.slice(0, 1500))) codigoGrupo = "Herbicida (HRAC)";
+        else codigoGrupo = "Defensivo Químico Registrado";
+      }
+
+      let grupoQuimicoNome = "";
+      const matchGQ = textoComposicao.match(/GRUPO\s+QU[IÍ]MICO\s*:([\s\S]{3,160}?)(?:TIPO\s+DE\s+FORMULA[ÇC][AÃ]O|INSTRU[ÇC][OÕ]ES|MODO\s+DE\s+A[ÇC][AÃ]O|TITULAR|$)/i);
+      if (matchGQ) {
+        let bruto = matchGQ[1].replace(/\s+/g, ' ').trim();
+        // Remove menções a inertes como "Argila de atapulgita: silicatos"
+        bruto = bruto.replace(/Argila\s+de\s+atapulgita\s*:?\s*silicatos?/gi, '').trim();
+        // Se vier no formato "Clorantraniliprole: Antranilamida ou diamida antranílica", pega a descrição após os dois pontos
+        const partesDoisPontos = bruto.split(':');
+        if (partesDoisPontos.length >= 2) {
+          grupoQuimicoNome = partesDoisPontos.slice(1).join(':').trim();
+        } else {
+          grupoQuimicoNome = bruto;
+        }
+        grupoQuimicoNome = grupoQuimicoNome.replace(/[.;,]+$/, '').trim();
+      }
+
+      const grupoFinal = (grupoQuimicoNome && grupoQuimicoNome.length >= 3 && grupoQuimicoNome.length <= 70)
+        ? `${grupoQuimicoNome} — ${codigoGrupo}`
+        : codigoGrupo;
+
+      return { ia: iaFinal, grupo: grupoFinal };
+    }
+
+function extrairObjetoAgronomico(texto, nomeArquivo) {
       let nome = "";
       const matchMarca = texto.match(/BULA\s+([A-Z0-9\s\-®]+?)(?:Registrado|COMPOSIÇÃO|Classe|MAPA)/i);
       if (matchMarca && matchMarca[1].trim().length < 50) {
@@ -2063,55 +2916,7 @@
         nome = nomeArquivo.replace(/\.pdf$/i, '').split(/[-_ ]/)[0].toUpperCase();
       }
 
-      let ia = "";
-      const matchMAPA = texto.match(/(?:COMPOSIÇÃO:\s*|Ingrediente Ativo:\s*)([A-ZÇÃÕa-z\s\-,]+?)\s*\.{3,}/i);
-      if (matchMAPA && matchMAPA[1].length < 80) {
-        ia = matchMAPA[1].replace(/\b(mistura|isômeros|complexo)\b.*/gi, '').trim();
-      }
-
-      const listaIAs = [
-        "Benalaxil", "Mancozebe", "Tiofanato-metílico", "Fluazinam", "Acetamiprido", 
-        "Flupiradifurona", "Pimetrozina", "Flonicamida", "Metomil", "Cloridrato de Cartape", 
-        "Cartape", "Abamectina", "Tiametoxam", "Lambda-cialotrina", "Flubendiamida", 
-        "Azoxistrobina", "Difenoconazol", "Cletodim", "Glifosato", "Clorantraniliprole", 
-        "Cipermetrina", "Imidacloprido", "Tebuconazol", "Protioconazol", "Trifloxistrobina",
-        "Picoxistrobina", "Pyraclostrobina", "Metalaxil", "Dimetomorfe", "Cimoxanil",
-        "Acefato", "Clorpirifós", "Bifentrina", "Deltametrina", "Beta-ciflutrina", "Diafentiuron",
-        "Cloridrato de Formetanato", "Formetanato", "Lufenuron", "Tiodicarbe"
-      ];
-      let iasEncontrados = [];
-      listaIAs.forEach(item => {
-        const reg = new RegExp(`\\b${item}\\b`, 'i');
-        if (reg.test(texto)) {
-          iasEncontrados.push(item);
-        }
-      });
-      if (iasEncontrados.length > 0) {
-        ia = iasEncontrados.join(" + ");
-      } else if (!ia) {
-        const matchPar = texto.match(/\(([A-ZÇÃÕa-z\s\-]+)\)\s*\.{3,}/);
-        ia = matchPar ? matchPar[1].trim() : "Ingrediente ativo especificado em bula";
-      }
-
-      let grupo = "";
-      const matchGrupo = texto.match(/GRUPO\s+([A-Z0-9\s+]+)\s+(INSETICIDA|FUNGICIDA|HERBICIDA|ACARICIDA)/i);
-      const matchGrupoQuimico = texto.match(/GRUPO QUÍMICO:\s*([^\n.;]+)/i);
-
-      if (matchGrupo) {
-        const codigos = matchGrupo[1].trim().toUpperCase();
-        const tipo = matchGrupo[2].toUpperCase();
-        let prefixo = "IRAC";
-        if (tipo === "FUNGICIDA") prefixo = "FRAC";
-        if (tipo === "HERBICIDA") prefixo = "HRAC";
-        grupo = `${tipo} (${prefixo} Grupo ${codigos})`;
-      } else if (matchGrupoQuimico) {
-        grupo = matchGrupoQuimico[1].trim();
-      } else {
-        if (/fungicida/i.test(texto)) grupo = "Fungicida (FRAC)";
-        else if (/inseticida/i.test(texto)) grupo = "Inseticida (IRAC)";
-        else if (/herbicida/i.test(texto)) grupo = "Herbicida (HRAC)";
-        else grupo = "Defensivo Químico Registrado";
-      }
+      const { ia, grupo } = extrairIAeGrupoBula(texto);
 
       let classe = "OUTROS";
       if (grupo.includes("IRAC") || /inseticida|acaricida/i.test(grupo) || /inseticida/i.test(texto)) classe = "IRAC";
@@ -2192,17 +2997,7 @@
       });
 
       let listaFinalAlvos = Array.from(mapaNormalizado.values());
-      let alvoFinal = "";
-
-      if (listaFinalAlvos.length > 0) {
-        alvoFinal = listaFinalAlvos.join(", ");
-      } else {
-        if (/mildio|míldio/i.test(texto)) alvoFinal = "Míldio, Requeima";
-        else if (/fungicida/i.test(texto)) alvoFinal = "Mofo-branco, Antracnose, Manchas foliares";
-        else if (/acaricida/i.test(texto)) alvoFinal = "Ácaro-rajado, Ácaro-branco";
-        else if (/inseticida/i.test(texto)) alvoFinal = "Pulgão, Lagartas, Sugadores";
-        else alvoFinal = "Pragas e Doenças da cultura";
-      }
+      let alvoFinal = listaFinalAlvos.length > 0 ? listaFinalAlvos.join(", ") : "Pragas e Doenças registradas em bula";
 
       let culturaFinal = extrairTodasAsCulturas(texto);
       let dose = extrairDoseInteligenteBula(texto);
@@ -2288,54 +3083,7 @@
         nome = nomeArquivo.replace(/\.pdf$/i, '').split(/[-_ ]/)[0].toUpperCase();
       }
 
-      let ia = "";
-      const matchMAPA = texto.match(/(?:COMPOSIÇÃO:\s*|Ingrediente Ativo:\s*)([A-ZÇÃÕa-z\s\-,]+?)\s*\.{3,}/i);
-      if (matchMAPA && matchMAPA[1].length < 80) {
-        ia = matchMAPA[1].replace(/\b(mistura|isômeros|complexo)\b.*/gi, '').trim();
-      }
-
-      const listaIAs = [
-        "Benalaxil", "Mancozebe", "Tiofanato-metílico", "Fluazinam", "Acetamiprido", 
-        "Flupiradifurona", "Pimetrozina", "Flonicamida", "Metomil", "Cloridrato de Cartape", 
-        "Cartape", "Abamectina", "Tiametoxam", "Lambda-cialotrina", "Flubendiamida", 
-        "Azoxistrobina", "Difenoconazol", "Cletodim", "Glifosato", "Clorantraniliprole", 
-        "Cipermetrina", "Imidacloprido", "Tebuconazol", "Protioconazol", "Trifloxistrobina",
-        "Picoxistrobina", "Pyraclostrobina", "Metalaxil", "Dimetomorfe", "Cimoxanil",
-        "Acefato", "Clorpirifós", "Bifentrina", "Deltametrina", "Beta-ciflutrina", "Diafentiuron"
-      ];
-      let iasEncontrados = [];
-      listaIAs.forEach(item => {
-        const reg = new RegExp(`\\b${item}\\b`, 'i');
-        if (reg.test(texto)) {
-          iasEncontrados.push(item);
-        }
-      });
-      if (iasEncontrados.length > 0) {
-        ia = iasEncontrados.join(" + ");
-      } else if (!ia) {
-        const matchPar = texto.match(/\(([A-ZÇÃÕa-z\s\-]+)\)\s*\.{3,}/);
-        ia = matchPar ? matchPar[1].trim() : "Ingrediente ativo especificado em bula";
-      }
-
-      let grupo = "";
-      const matchGrupo = texto.match(/GRUPO\s+([A-Z0-9\s+]+)\s+(INSETICIDA|FUNGICIDA|HERBICIDA|ACARICIDA)/i);
-      const matchGrupoQuimico = texto.match(/GRUPO QUÍMICO:\s*([^\n.;]+)/i);
-
-      if (matchGrupo) {
-        const codigos = matchGrupo[1].trim().toUpperCase();
-        const tipo = matchGrupo[2].toUpperCase();
-        let prefixo = "IRAC";
-        if (tipo === "FUNGICIDA") prefixo = "FRAC";
-        if (tipo === "HERBICIDA") prefixo = "HRAC";
-        grupo = `${tipo} (${prefixo} Grupo ${codigos})`;
-      } else if (matchGrupoQuimico) {
-        grupo = matchGrupoQuimico[1].trim();
-      } else {
-        if (/fungicida/i.test(texto)) grupo = "Fungicida (FRAC)";
-        else if (/inseticida/i.test(texto)) grupo = "Inseticida (IRAC)";
-        else if (/herbicida/i.test(texto)) grupo = "Herbicida (HRAC)";
-        else grupo = "Defensivo Químico Registrado";
-      }
+      const { ia, grupo } = extrairIAeGrupoBula(texto);
 
       let alvosEncontrados = [];
       const regexBulaCientifica = /([A-ZÁÉÍÓÚÀÂÊÔÃÕÇ][a-záéíóúàâêôãõç\-]+(?:\s+[a-záéíóúàâêôãõç\-]+){0,3})\s*\(([A-Z][a-z]+\s+[a-z]+(?:\s+subsp\.\s+[a-z]+)?)\)/g;
@@ -2462,7 +3210,7 @@
       else if (grupo.includes("HRAC") || /herbicida/i.test(grupo)) classe = "HRAC";
 
       if (indexExistente !== -1) {
-        const confirmar = confirm(`O produto "${nomeInformado}" já se encontra cadastrado no sistema!\n\nDeseja ATUALIZAR a bula e os dados deste defensivo existente?\n\n[OK] Sim, atualizar dados existentes\n[Cancelar] Não, cancelar para não duplicar`);
+        const confirmar = confirm("O produto \"" + nomeInformado + "\" já se encontra cadastrado no sistema!\n\nDeseja ATUALIZAR a bula e os dados deste defensivo existente?\n\n[OK] Sim, atualizar dados existentes\n[Cancelar] Não, cancelar para não duplicar");
         if (!confirmar) {
           return;
         }
@@ -2508,7 +3256,8 @@
         cultura: document.getElementById('novoCultura').value,
         dose: document.getElementById('novoDose').value,
         carencia: Number(document.getElementById('novoCarencia').value) || 0,
-        obs: document.getElementById('novoObs').value
+        obs: document.getElementById('novoObs').value,
+        linkBula: (document.getElementById('novoLinkBula') ? document.getElementById('novoLinkBula').value.trim() : '')
       };
 
       produtos.unshift(novo);
@@ -2533,7 +3282,7 @@
     function exportCSV() {
       let csv = "Produto,Ingrediente Ativo,Modo de Acao,Alvo,Cultura,Dose,Carencia,Observacoes\n";
       produtos.forEach(p => {
-        csv += `"${p.nome}","${p.ia}","${p.grupo}","${p.alvo}","${p.cultura}","${p.dose}",${p.carencia},"${p.obs.replace(/"/g, '""')}"\n`;
+        csv += `"${p.nome}","${p.ia}","${p.grupo}","${p.alvo}","${p.cultura}","${p.dose}",${p.carencia},"${(p.obs || '').replace(/"/g, '""')}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -2601,7 +3350,10 @@
       if (!grid) return;
       grid.innerHTML = '';
 
-      const filtrados = produtos.filter(p => {
+      // Garante desduplicação rigorosa na visualização do repositório
+      const listaUnica = deduplicarListaProdutos(produtos);
+
+      const filtrados = listaUnica.filter(p => {
         const matchBusca = !q || normalizar(p.nome).includes(q) || normalizar(p.ia || '').includes(q) || normalizar(p.alvo || '').includes(q);
         const matchClasse = !categoriaRepositorioAtual || (p.grupo && p.grupo.includes(categoriaRepositorioAtual));
         return matchBusca && matchClasse;
@@ -2620,6 +3372,7 @@
       filtrados.forEach(p => {
         const pId = p.id || p.nome;
         const temArquivoNaSessao = window.pdfSessionCache && (window.pdfSessionCache.has(pId) || window.pdfSessionCache.has(p.nome));
+        const tox = obterToxicologiaEReentrada(p);
 
         let badgeClasseCor = "bg-slate-100 text-slate-700 border-slate-200";
         if (p.grupo && /IRAC|inseticida/i.test(p.grupo)) badgeClasseCor = "bg-blue-50 text-blue-700 border-blue-200";
@@ -2641,9 +3394,12 @@
                   <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">${p.ia || 'Ingrediente Ativo'}</p>
                 </div>
               </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeClasseCor} flex-shrink-0">
-                ${p.grupo ? p.grupo.split('(')[0].trim() : 'Defensivo'}
-              </span>
+              <div class="flex flex-col items-end gap-1">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeClasseCor} flex-shrink-0">
+                  ${p.grupo ? p.grupo.split('(')[0].trim() : 'Defensivo'}
+                </span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded border ${tox.bgLeve} ${tox.textoCor} ${tox.bordaCor}">${tox.rotulo}</span>
+              </div>
             </div>
             
             <div class="mt-2.5 pt-2 border-t border-slate-100 grid grid-cols-2 gap-1.5 text-[11px] text-slate-600">
@@ -2659,10 +3415,10 @@
             </span>
 
             <div class="flex items-center gap-1.5">
-              <button onclick="abrirDetalhes(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition" title="Ver Ficha Técnica">
+              <button data-id="${escapeAttr(pId)}" onclick="abrirDetalhesPorId(this.dataset.id)" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition cursor-pointer" title="Ver Ficha Técnica">
                 <i class="fa-solid fa-circle-info"></i> Ficha
               </button>
-              <button onclick="abrirBulaEmNovaAba('${pId}')" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs transition flex items-center gap-1 shadow-sm" title="Abrir arquivo da Bula em nova aba">
+              <button data-id="${escapeAttr(pId)}" onclick="abrirBulaEmNovaAba(this.dataset.id)" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs transition flex items-center gap-1 shadow-sm cursor-pointer" title="Abrir arquivo da Bula em nova aba">
                 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Abrir Bula
               </button>
             </div>
@@ -2723,7 +3479,7 @@
             return;
           }
 
-          const confirmar = confirm(`Deseja restaurar ${novosProdutos.length} produtos do backup?\nIsso atualizará os produtos no sistema.`);
+          const confirmar = confirm("Deseja restaurar " + novosProdutos.length + " produtos do backup?\nIsso atualizará os produtos no sistema.");
           if (!confirmar) return;
 
           produtos = higienizarPragasECulturas(deduplicarListaProdutos([...novosProdutos, ...produtos]));
@@ -2741,6 +3497,7 @@
       reader.readAsText(file);
     }
 
+    // Suporte para Instalação como App Nativo (PWA)
     let deferredPromptApp;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -2784,7 +3541,377 @@
       document.head.appendChild(manifestLink);
     } catch(e) {}
 
+    // =========================================================================
+    // MOTOR DE ESTOQUE DIÁRIO (IMPORTAÇÃO DE PDF & CRUZAMENTO AUTOMÁTICO)
+    // =========================================================================
+    const STORAGE_KEY_ESTOQUE = 'agroprescreve_estoque_diario_v1';
+    let estoqueDiarioData = {
+      dataAtualizacao: null,
+      nomeArquivo: '',
+      itens: [] // { nomeOriginal, chaveNormalizada, palavrasChave, quantidade, unidade, textoSaldo }
+    };
+    let apenasEmEstoqueAtivo = false;
+
+    try {
+      const estSalvo = localStorage.getItem(STORAGE_KEY_ESTOQUE);
+      if (estSalvo) {
+        const parsed = JSON.parse(estSalvo);
+        if (parsed && Array.isArray(parsed.itens)) {
+          estoqueDiarioData = parsed;
+        }
+      }
+    } catch (e) {}
+
+    function salvarEstoqueStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY_ESTOQUE, JSON.stringify(estoqueDiarioData));
+      } catch (e) {}
+    }
+
+    function extrairTokensProduto(nome) {
+      const n = normalizar(nome || '')
+        .replace(/[®™+()\/\-]/g, ' ')
+        .replace(/\b(500\s*sp|500sp|15g|20l|10l|5l|1l|br|ec|sc|wg|wp|sl|ew|me|fs|ce|gr|dp|od|cs|zc|fungicida|inseticida|acaricida|herbicida|adjuvante|fertilizante|foliar|lt|l|kg|ml|g|un|cx|gl|bb|fr|pct)\b/gi, ' ')
+        .replace(/\b\d+(?:[.,]\d+)?\b/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return n.split(' ').filter(w => w.length >= 3);
+    }
+
+    function obterInfoEstoqueProduto(p) {
+      if (!estoqueDiarioData || !Array.isArray(estoqueDiarioData.itens) || estoqueDiarioData.itens.length === 0) {
+        return { importado: false, disponivel: false, texto: 'Sem arquivo', quantidade: 0 };
+      }
+
+      const chaveProd = normalizarNomeComparacao(p.nome);
+      const tokensProd = extrairTokensProduto(p.nome);
+      const nomeProdNorm = normalizar(p.nome || '').replace(/[®™]/g, '').trim();
+
+      let melhorMatch = null;
+      let maiorPontuacao = 0;
+
+      for (let i = 0; i < estoqueDiarioData.itens.length; i++) {
+        const item = estoqueDiarioData.itens[i];
+        let pontos = 0;
+
+        if (chaveProd && item.chaveNormalizada && chaveProd === item.chaveNormalizada) {
+          pontos = 100;
+        } else if (nomeProdNorm.length >= 4 && item.nomeNorm && (item.nomeNorm.includes(nomeProdNorm) || nomeProdNorm.includes(item.nomeNorm))) {
+          pontos = 85;
+        } else if (tokensProd.length > 0 && item.palavrasChave && item.palavrasChave.length > 0) {
+          // Compara a palavra principal (marca comercial)
+          if (tokensProd[0] === item.palavrasChave[0] && tokensProd[0].length >= 4) {
+            pontos = 75;
+            if (tokensProd.length > 1 && item.palavrasChave.includes(tokensProd[1])) {
+              pontos += 15;
+            }
+          }
+        }
+
+        if (pontos > maiorPontuacao) {
+          maiorPontuacao = pontos;
+          melhorMatch = item;
+        }
+      }
+
+      if (melhorMatch && maiorPontuacao >= 70) {
+        const qtd = Number(melhorMatch.quantidade) || 0;
+        return {
+          importado: true,
+          encontrado: true,
+          disponivel: qtd > 0,
+          quantidade: qtd,
+          unidade: melhorMatch.unidade || '',
+          texto: melhorMatch.textoSaldo || (qtd > 0 ? `${qtd} ${melhorMatch.unidade || 'un'}` : '0 (Zerado)'),
+          nomeNoEstoque: melhorMatch.nomeOriginal
+        };
+      }
+
+      return {
+        importado: true,
+        encontrado: false,
+        disponivel: false,
+        quantidade: 0,
+        texto: 'Indisponível'
+      };
+    }
+
+    function renderizarCelulaEstoque(p) {
+      const info = obterInfoEstoqueProduto(p);
+      if (!info.importado) {
+        return `<button onclick="event.stopPropagation(); abrirModalEstoqueDiario()" class="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-400 hover:text-sky-700 bg-slate-50 hover:bg-sky-50 border border-slate-200 px-2 py-0.5 rounded-full transition cursor-pointer" title="Clique para importar o PDF do estoque diário">
+          <i class="fa-solid fa-upload text-[9px]"></i> Importar PDF
+        </button>`;
+      }
+
+      if (info.disponivel) {
+        return `<div class="inline-flex flex-col items-center">
+          <span class="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full shadow-xs whitespace-nowrap" title="Item localizado no estoque: ${escapeAttr(info.nomeNoEstoque || p.nome)}">
+            <i class="fa-solid fa-circle-check text-emerald-600 text-[9px]"></i> Em Estoque
+          </span>
+          <span class="text-[10px] font-bold text-slate-700 mt-0.5 whitespace-nowrap">${escapeAttr(info.texto)}</span>
+        </div>`;
+      }
+
+      return `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full whitespace-nowrap" title="${info.encontrado ? 'Saldo zerado no relatório diário' : 'Produto não consta com saldo no PDF importado'}">
+        <i class="fa-solid fa-circle-xmark text-rose-500 text-[9px]"></i> Sem Estoque
+      </span>`;
+    }
+
+    function alternarFiltroApenasEstoque() {
+      if (!estoqueDiarioData.itens || estoqueDiarioData.itens.length === 0) {
+        abrirModalEstoqueDiario();
+        return;
+      }
+      apenasEmEstoqueAtivo = !apenasEmEstoqueAtivo;
+      const btn = document.getElementById('btnFiltroApenasEstoque');
+      if (btn) {
+        if (apenasEmEstoqueAtivo) {
+          btn.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-700 bg-emerald-700 text-white shadow-xs transition cursor-pointer flex items-center gap-1";
+        } else {
+          btn.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 transition cursor-pointer flex items-center gap-1";
+        }
+      }
+      filtrarDados();
+    }
+
+    function abrirModalEstoqueDiario() {
+      const modal = document.getElementById('modalEstoqueDiario');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      atualizarBadgesEstoqueUI();
+      renderizarListaConferenciaEstoque();
+    }
+
+    function fecharModalEstoqueDiario() {
+      const modal = document.getElementById('modalEstoqueDiario');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function limparEstoqueDiario() {
+      if (!confirm("Deseja limpar os dados do estoque diário atual?")) return;
+      estoqueDiarioData = { dataAtualizacao: null, nomeArquivo: '', itens: [] };
+      apenasEmEstoqueAtivo = false;
+      salvarEstoqueStorage();
+      atualizarBadgesEstoqueUI();
+      renderizarListaConferenciaEstoque();
+      filtrarDados();
+    }
+
+    function atualizarBadgesEstoqueUI() {
+      const totalItens = estoqueDiarioData.itens ? estoqueDiarioData.itens.length : 0;
+      const comSaldo = estoqueDiarioData.itens ? estoqueDiarioData.itens.filter(i => i.quantidade > 0).length : 0;
+
+      const badgeHeader = document.getElementById('badgeStatusEstoqueHeader');
+      if (badgeHeader) {
+        badgeHeader.textContent = comSaldo;
+      }
+
+      const badgeTabela = document.getElementById('badgeAtualizacaoEstoqueTabela');
+      if (badgeTabela) {
+        if (totalItens > 0 && estoqueDiarioData.dataAtualizacao) {
+          badgeTabela.className = "text-[11px] bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full font-bold cursor-pointer transition";
+          badgeTabela.innerHTML = `<i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Estoque: ${estoqueDiarioData.dataAtualizacao} (${comSaldo} disp.)`;
+        } else {
+          badgeTabela.className = "text-[11px] bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 px-2.5 py-1 rounded-full font-semibold cursor-pointer transition";
+          badgeTabela.innerHTML = `<i class="fa-solid fa-boxes-stacked text-sky-600"></i> Estoque: Não importado`;
+        }
+      }
+
+      const infoData = document.getElementById('infoDataEstoqueModal');
+      if (infoData) {
+        infoData.textContent = estoqueDiarioData.dataAtualizacao
+          ? `${estoqueDiarioData.dataAtualizacao} (${estoqueDiarioData.nomeArquivo || 'Relatório PDF'})`
+          : 'Nenhum arquivo importado ainda';
+      }
+
+      const infoResumo = document.getElementById('infoResumoCruzamentoModal');
+      if (infoResumo) {
+        const vinculados = produtos.filter(p => obterInfoEstoqueProduto(p).disponivel).length;
+        infoResumo.textContent = `${comSaldo} itens com saldo (${vinculados} na tabela)`;
+      }
+    }
+
+    function renderizarListaConferenciaEstoque() {
+      const container = document.getElementById('listaConferenciaEstoque');
+      if (!container) return;
+
+      if (!estoqueDiarioData.itens || estoqueDiarioData.itens.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-slate-400">Importe o PDF acima para visualizar os itens e quantidades lidas.</div>';
+        return;
+      }
+
+      const busca = normalizar(document.getElementById('buscaItemEstoqueModal') ? document.getElementById('buscaItemEstoqueModal').value : '');
+      const filtrados = estoqueDiarioData.itens.filter(it => !busca || normalizar(it.nomeOriginal).includes(busca));
+
+      if (filtrados.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-slate-400">Nenhum item encontrado com esse termo.</div>';
+        return;
+      }
+
+      container.innerHTML = filtrados.slice(0, 150).map(it => {
+        const temSaldo = it.quantidade > 0;
+        return `<div class="px-3 py-2 flex items-center justify-between gap-2 text-xs hover:bg-slate-50">
+          <div class="font-semibold text-slate-800 truncate flex-1">${escapeAttr(it.nomeOriginal)}</div>
+          <span class="px-2 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap ${temSaldo ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-50 text-rose-700'}">
+            ${escapeAttr(it.textoSaldo)}
+          </span>
+        </div>`;
+      }).join('');
+    }
+
+    function parseNumeroBrasileiro(str) {
+      if (!str) return 0;
+      let clean = String(str).trim();
+      if (clean.includes(',') && clean.includes('.')) {
+        clean = clean.replace(/\./g, '').replace(',', '.');
+      } else if (clean.includes(',')) {
+        clean = clean.replace(',', '.');
+      }
+      const val = parseFloat(clean);
+      return isNaN(val) ? 0 : val;
+    }
+
+    async function processarPDFEstoqueDiario(file) {
+      if (!file) return;
+      const status = document.getElementById('statusLeituraEstoque');
+      if (status) {
+        status.classList.remove('hidden');
+        status.className = "text-xs font-semibold py-2 px-3 rounded-lg inline-flex items-center gap-2 bg-amber-100 text-amber-900";
+        status.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-600"></i> Lendo relatório de estoque "${escapeAttr(file.name)}"...`;
+      }
+
+      try {
+        if (typeof pdfjsLib === 'undefined') {
+          throw new Error("Leitor PDF.js não carregado. Verifique sua conexão.");
+        }
+
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let linhasReconstruidas = [];
+
+        for (let p = 1; p <= pdf.numPages; p++) {
+          const page = await pdf.getPage(p);
+          const textContent = await page.getTextContent();
+
+          // Agrupa itens pela coordenada vertical (Y) para reconstruir cada linha da tabela do PDF
+          const linhasPorY = new Map();
+          textContent.items.forEach(item => {
+            const str = (item.str || '').trim();
+            if (!str) return;
+            const y = Math.round(item.transform[5] / 4) * 4;
+            if (!linhasPorY.has(y)) linhasPorY.set(y, []);
+            linhasPorY.get(y).push({ x: item.transform[4], str });
+          });
+
+          const ysOrdenados = Array.from(linhasPorY.keys()).sort((a, b) => b - a);
+          ysOrdenados.forEach(y => {
+            const pedacos = linhasPorY.get(y).sort((a, b) => a.x - b.x);
+            linhasReconstruidas.push(pedacos.map(i => i.str).join(' '));
+          });
+        }
+
+        const itensExtraidos = [];
+        const nomesJaLidos = new Set();
+
+        // Padrões comuns em relatórios de estoque ERP (Agriwin, Siagri, Totvs, Senior, Sankhya, etc.)
+        const regexLinhaEstoque = /^([A-Z0-9À-Ú][A-Z0-9À-Úa-zà-ú\s.\-\/®+()]{2,65}?)\s+(?:(LT|L|KG|ML|G|UN|CX|GL|BB|FR|SC|PCT)\s+)?(-?\d{1,3}(?:\.\d{3})*(?:,\d+)?|-?\d+(?:[.,]\d+)?)\s*(LT|L|KG|ML|G|UN|CX|GL|BB|FR|SC|PCT)?(?:\s|$)/i;
+
+        linhasReconstruidas.forEach(linha => {
+          const lLimpa = linha.replace(/\s+/g, ' ').trim();
+          if (lLimpa.length < 5) return;
+          if (/^(página|pagina|relatório|relatorio|data|hora|empresa|filial|depósito|deposito|código|codigo|descrição|descricao|produto|saldo|estoque|total|subtotal|saldo atual)/i.test(lLimpa)) return;
+
+          // Remove eventual código numérico inicial (ex: "001245 LANNATE BR 150,00 LT")
+          const semCodigo = lLimpa.replace(/^\d{1,10}\s*[-–]?\s*/, '');
+          const m = semCodigo.match(regexLinhaEstoque);
+          if (m) {
+            let nomeProd = m[1].trim();
+            // Remove preços ou códigos extras no final do nome
+            nomeProd = nomeProd.replace(/\s+\d{1,3}(?:\.\d{3})*,\d{2}.*$/, '').trim();
+            if (nomeProd.length < 3 || /^\d+$/.test(nomeProd)) return;
+
+            const unidade = (m[4] || m[2] || '').toUpperCase();
+            const qtd = parseNumeroBrasileiro(m[3]);
+            const chaveNorm = normalizarNomeComparacao(nomeProd);
+
+            if (chaveNorm && !nomesJaLidos.has(chaveNorm)) {
+              nomesJaLidos.add(chaveNorm);
+              itensExtraidos.push({
+                nomeOriginal: nomeProd,
+                nomeNorm: normalizar(nomeProd).replace(/[®™]/g, '').trim(),
+                chaveNormalizada: chaveNorm,
+                palavrasChave: extrairTokensProduto(nomeProd),
+                quantidade: qtd,
+                unidade: unidade,
+                textoSaldo: `${m[3]} ${unidade}`.trim()
+              });
+            }
+          }
+        });
+
+        // Fallback caso o PDF seja texto corrido sem quebra por coordenadas
+        if (itensExtraidos.length === 0) {
+          const textoTodo = linhasReconstruidas.join(' ');
+          produtos.forEach(p => {
+            const tokens = extrairTokensProduto(p.nome);
+            if (tokens.length > 0 && tokens[0].length >= 4) {
+              const reg = new RegExp(`(${tokens[0]}[^\\d]{0,35}?)(\\d+(?:[.,]\\d+)?)\\s*(LT|L|KG|ML|G|UN|CX|GL|SC|PCT)?`, 'i');
+              const match = textoTodo.match(reg);
+              if (match) {
+                const qtd = parseNumeroBrasileiro(match[2]);
+                const un = (match[3] || '').toUpperCase();
+                itensExtraidos.push({
+                  nomeOriginal: p.nome,
+                  nomeNorm: normalizar(p.nome),
+                  chaveNormalizada: normalizarNomeComparacao(p.nome),
+                  palavrasChave: tokens,
+                  quantidade: qtd,
+                  unidade: un,
+                  textoSaldo: `${match[2]} ${un}`.trim()
+                });
+              }
+            }
+          });
+        }
+
+        const agora = new Date();
+        const dataFmt = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        estoqueDiarioData = {
+          dataAtualizacao: dataFmt,
+          nomeArquivo: file.name,
+          itens: itensExtraidos
+        };
+
+        salvarEstoqueStorage();
+        atualizarBadgesEstoqueUI();
+        renderizarListaConferenciaEstoque();
+        filtrarDados();
+
+        if (status) {
+          status.className = "text-xs font-semibold py-2 px-3 rounded-lg inline-flex items-center gap-2 bg-emerald-100 text-emerald-800";
+          status.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-base"></i> Estoque atualizado! ${itensExtraidos.length} produto(s) identificados no relatório.`;
+        }
+      } catch (err) {
+        console.error("Erro ao processar PDF de estoque:", err);
+        if (status) {
+          status.className = "text-xs font-semibold py-2 px-3 rounded-lg inline-flex items-center gap-2 bg-rose-100 text-rose-800";
+          status.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Erro ao ler PDF: ${escapeAttr(err.message)}`;
+        }
+      }
+    }
+
     window.onload = () => {
+      // Desduplica automaticamente qualquer repetição salva no histórico do navegador
+      produtos = higienizarPragasECulturas(deduplicarListaProdutos(produtos));
+      salvarNoStorage();
+
+      if (localStorage.getItem('agroprescreve_dark_mode') === 'true') {
+        toggleModoEscuro();
+      }
+      atualizarContadorPrescricao();
+      atualizarBadgesEstoqueUI();
       popularDropdownCulturas();
       popularDropdownPragas();
       atualizarListaPiretroides();
